@@ -1,0 +1,2 @@
+curl -i -X POST -H 'Content-Type: application/json' -d '{"id": "Resource_36", "name": "Danielek", "period": "21", "interval":"5"}' http://localhost:8888/measurements
+curl -X "DELETE" http://localhost:8888/measurements
