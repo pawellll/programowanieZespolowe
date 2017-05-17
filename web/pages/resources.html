@@ -38,7 +38,7 @@
 
 </head>
 
-<body>
+<body onload="getMeasurementsFromMonitor();">
 
     <div id="wrapper">
 
@@ -168,7 +168,7 @@
                         </div>
 
                         <div class="panel-body">
-                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="resourcesTableId">
                                 <thead>
                                     <tr>
                                         <th>Id</th>
@@ -180,30 +180,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="odd gradeX">
-                                        <td>ID1</td>
-                                        <td>Name1</td>
-                                        <td>Metric1</td>
-                                        <td class="center">Desc1</td>
-										<td>Unit1</td>
-										<td><button id="submit" name="submit" class="form-btn semibold">Edit</button><button id="submit" name="submit" class="form-btn semibold">Remove</button></td>
-                                    </tr>
-                                    <tr class="even gradeC">
-                                        <td>ID2</td>
-                                        <td>Name2</td>
-                                        <td>Metric12</td>
-                                        <td class="center">Desc2</td>
-										<td>Unit2</td>
-										<td><button id="submit" name="submit" class="form-btn semibold">Edit</button><button id="submit" name="submit" class="form-btn semibold">Remove</button></td>
-                                    </tr>
-                                    <tr class="odd gradeA">
-                                        <td>ID3</td>
-                                        <td>Name3</td>
-                                        <td>Metric3</td>
-                                        <td class="center">Desc3</td>
-										<td>Unit3</td>
-										<td><button id="submit" name="submit" class="form-btn semibold">Edit</button><button id="submit" name="submit" class="form-btn semibold">Remove</button></td>
-                                    </tr>
+                                    
                                 </tbody>
                             </table>
                         </div>
@@ -229,16 +206,7 @@
     <script src="../vendor/datatables-responsive/dataTables.responsive.js"></script>
 
     <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
-
-    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
-    <script>
-    $(document).ready(function() {
-        $('#dataTables-example').DataTable({
-            responsive: true
-        });
-    });
-    </script>
+    <script src="../js/sb-admin-2.js"></script>
 
 </body>
 
