@@ -1,45 +1,69 @@
 //var getMeasurementsUrl = 'http://127.0.0.1:8888/measurements';
 var getMeasurementsUrl = 'http://89.79.119.210:1030/measurements';
 
+var streamsData;
 var measurementsData;
 
-function getMeasurementsFromMonitor() {
+function getStreamsFromMonitor() {
 	
 	console.log("test");
 	$.ajax({
         url: getMeasurementsUrl,
         type: 'GET'
     }).then(function(data) {
+		streamsData = data;
+    	createStreamsTable();
+    });
+	
+}
+
+function getMeasurementsFromMonitor() {
+	
+	var measurementIdValue = document.getElementById('measurementId').value;
+	var concatenatedUrl = getMeasurementsUrl + "/" + measurementIdValue;
+	
+	var limitIdValue = document.getElementById('limitId').value;
+	if(limitIdValue) {
+		concatenatedUrl += "?limit=" + limitIdValue;
+	}
+	
+	console.log(concatenatedUrl);
+	
+	$.ajax({
+        url: concatenatedUrl,
+        type: 'GET'
+    }).then(function(data) {
 		measurementsData = data;
-    	createTable();
+		console.log(measurementsData);
+		createSimpleMeasurementsTable();
     });
 	
 }
  
-function createTable() {
+function createStreamsTable() {
 	
 	var tableRef = document.getElementById('resourcesTableId').getElementsByTagName('tbody')[0];
-	for (var i = 0; i < measurementsData.streams.length; ++i) {
+	for (var i = 0; i < streamsData.streams.length; ++i) {
 		var newRow   = tableRef.insertRow(tableRef.rows.length);
 		var newIdCell  = newRow.insertCell(0);
-		var newIdText  = document.createTextNode(measurementsData.streams[i].id);
+		var newIdText  = document.createTextNode(streamsData.streams[i].id);
 		newIdCell.appendChild(newIdText);
 		
 		var newNameCell  = newRow.insertCell(1);
-		var newNameText  = document.createTextNode(measurementsData.streams[i].metadata.resourceName);
+		var newNameText  = document.createTextNode(streamsData.streams[i].metadata.resourceName);
 		newNameCell.appendChild(newNameText);
 		
 		var newMetricCell  = newRow.insertCell(2);
-		var newMetricText  = document.createTextNode(measurementsData.streams[i].metadata.metricName);
+		var newMetricText  = document.createTextNode(streamsData.streams[i].metadata.metricName);
 		newMetricCell.appendChild(newMetricText);
 		
 		var newDescriptionCell  = newRow.insertCell(3);
-		var newDescriptionText  = document.createTextNode(measurementsData.streams[i].metadata.description);
+		var newDescriptionText  = document.createTextNode(streamsData.streams[i].metadata.description);
 		newDescriptionCell.appendChild(newDescriptionText);
 		
 		var unitText = "";
-		if(measurementsData.streams[i].metadata.unitName !== undefined) {
-			unitText = measurementsData.streams[i].metadata.unitName;
+		if(streamsData.streams[i].metadata.unitName !== undefined) {
+			unitText = streamsData.streams[i].metadata.unitName;
 		}
 		var newUnitCell  = newRow.insertCell(4);
 		var newUnitText  = document.createTextNode(unitText);
@@ -63,6 +87,31 @@ function createTable() {
 		newRemoveButton.setAttribute("className", "form-btn semibold");
 		newRemoveButton.appendChild(newRemoveButtonText);
 		newButtonCell.appendChild(newRemoveButton);
+	}
+	
+}
+
+function createSimpleMeasurementsTable() {
+	document.getElementById('measurementLabelId').innerHTML = "Last measurements for resource name: " + measurementsData.metadata.resourceName + " , metric name: " + measurementsData.metadata.metricName;
+	
+	var tableRef = document.getElementById('measurementsTableId').getElementsByTagName('tbody')[0];
+	while(tableRef.rows.length > 0) {
+		tableRef.deleteRow(0);
+	}
+	console.log(measurementsData);
+	console.log(measurementsData.measurements);
+		
+	for (var i = 0; i < measurementsData.measurements.length; ++i) {
+		console.log(measurementsData.measurements[i].value);
+		var newRow   = tableRef.insertRow(tableRef.rows.length);
+		var newValueCell  = newRow.insertCell(0);
+		var newValueText  = document.createTextNode(measurementsData.measurements[i].value);
+		newValueCell.appendChild(newValueText);
+		
+		var newTimestampCell  = newRow.insertCell(1);
+		var date = new Date(parseInt(measurementsData.measurements[i].timestamp));
+		var newTimestampText = document.createTextNode(date);
+		newTimestampCell.appendChild(newTimestampText);
 	}
 	
 }
@@ -110,3 +159,4 @@ $(function() {
         }
     }
 });
+
