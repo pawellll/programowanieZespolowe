@@ -1,17 +1,16 @@
 package metrics;
 
-import oshi.SystemInfo;
 
-import javax.management.*;
+import com.sun.management.OperatingSystemMXBean;
+
 import java.lang.management.ManagementFactory;
-import java.util.Random;
 
 public class CpuMetric implements Metric {
     @Override
     public int measure() {
-        SystemInfo systemInfo = new SystemInfo();
-        double cpuUsage = systemInfo.getHardware().getProcessor().getSystemCpuLoad() * 100;
-        return (int) cpuUsage;
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(
+                OperatingSystemMXBean.class);
+        return (int)(osBean.getSystemCpuLoad() * 100);
     }
 
     @Override

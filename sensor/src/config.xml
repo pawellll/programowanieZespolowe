@@ -6,6 +6,6 @@
     <entry key="interval_metadata">60</entry>
     <entry key="address">127.0.0.1</entry>
     <entry key="port">9090</entry>
-    <entry key="metric">MEMORY</entry>
+    <entry key="metric">CPU</entry>
     <entry key="hostName">thisHostName</entry>
 </properties>
