@@ -170,12 +170,12 @@ app.get('/measurements/:id', function(req, res) {
 		result["measurements"] = [];
 
 		//get measurements here
-		SensorMeasurement.find({resourceId:req.params.id}).sort({time: -1}).limit(limit).exec(function(err, measurements) {
+		SensorMeasurement.find({resourceId:req.params.id}).sort({time: -1}).limit(Number(limit)).exec(function(err, measurements) {
 
 			if (err) {
 					console.log("Error:");
 					console.log(err);
-					res.status(401).send();		
+					res.status(400).send(); // TODO: what status should be sent here?
 					return;
 			}
 
