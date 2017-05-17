@@ -4,6 +4,7 @@
     <comment>interval in seconds. Available Metrics: CPU, MEMORY</comment>
     <entry key="interval_values">1</entry>
     <entry key="interval_metadata">60</entry>
+    <entry key="hostName">thisHostName</entry>
     <entry key="address">127.0.0.1</entry>
     <entry key="port">9090</entry>
     <entry key="metric">CPU</entry>
