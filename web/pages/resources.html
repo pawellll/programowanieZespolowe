@@ -38,7 +38,7 @@
 
 </head>
 
-<body onload="getMeasurementsFromMonitor();">
+<body onload="getStreamsFromMonitor();">
 
     <div id="wrapper">
 
@@ -140,24 +140,21 @@
             </div>
 			
 			<div class="tmp-form">
-							<!-- Form -->
-				<form id="tmp" method="post" action="#">
-					<!-- Left Inputs -->
-					<div class="col-xs-8 wow animated slideInLeft" data-wow-delay=".5s">
-						<!-- Name -->
-						<input type="text" name="ID" id="ID" required="required" class="form" placeholder="ID" />
-						<!-- Email -->
-						<input type="text" name="name" id="name" required="required" class="form" placeholder="Name" />
-						<!-- Subject -->
-						<input type="text" name="metric" id="metric" required="required" class="form" placeholder="Metric" />
-						<input type="text" name="description" id="description" required="required" class="form" placeholder="Description" />
-						<input type="text" name="unit" id="unit" required="required" class="form" placeholder="Unit" />
-						
-						<button type="submit" id="submit" name="submit" class="form-btn semibold">Add resource</button> 
-					</div>
-					<!-- Clear -->
-					<div class="clear"></div>
-				</form>
+				<!-- Left Inputs -->
+				<div id="filterResourcesDivId" class="col-xs-8 wow animated slideInLeft" data-wow-delay=".5s">
+					<!-- Name -->
+					<input type="text" name="filterIDName" id="filterIDId" class="form" placeholder="ID" />
+					<!-- Email -->
+					<input type="text" name="filterNameName" id="filterNameId" class="form" placeholder="Name" />
+					<!-- Subject -->
+					<input type="text" name="filterMetricName" id="filterMetricId" class="form" placeholder="Metric" />
+					<input type="text" name="filterDescriptionName" id="filterDescriptionId" class="form" placeholder="Description" />
+					<input type="text" name="filterUnitName" id="filterUnitId" class="form" placeholder="Unit" />
+					
+					<button type="submit" id="filterResourcesButtonId" name="filterResourcesButtonName" class="form-btn semibold">Filter resources</button> 
+				</div>
+				<!-- Clear -->
+				<div class="clear"></div>
 			</div>
 
             <div class="row">
@@ -211,3 +208,4 @@
 </body>
 
 </html>
+
