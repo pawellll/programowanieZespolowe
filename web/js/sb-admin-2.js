@@ -1,14 +1,37 @@
 //var getMeasurementsUrl = 'http://127.0.0.1:8888/measurements';
 var getMeasurementsUrl = 'http://89.79.119.210:1030/measurements';
+//var getHostsUrl = 'http://127.0.0.1:8888/hosts';
+var getHostsUrl = 'http://89.79.119.210:1030/hosts';
 
 var streamsData;
 var measurementsData;
+var hostsData;
 
 function getStreamsFromMonitor() {
 	
-	console.log("test");
+	var filterNameId = document.getElementById('filterNameId').value;
+	var filterMetricId = document.getElementById('filterMetricId').value;
+	var filterDescriptionId = document.getElementById('filterDescriptionId').value;
+	var filterUnitId = document.getElementById('filterUnitId').value;
+	
+	var concatenatedUrl = getMeasurementsUrl;
+	
+	if(filterNameId) {
+		concatenatedUrl += "?resource=" + filterNameId;
+	}
+	else if(filterMetricId) {
+		concatenatedUrl += "?metric=" + filterMetricId;
+	}
+	else if(filterDescriptionId) {
+		concatenatedUrl += "?description=" + filterDescriptionId;
+	}
+	else if(filterUnitId) {
+		concatenatedUrl += "?unit=" + filterUnitId;
+	}
+	
+	console.log(concatenatedUrl);
 	$.ajax({
-        url: getMeasurementsUrl,
+        url: concatenatedUrl,
         type: 'GET'
     }).then(function(data) {
 		streamsData = data;
@@ -39,8 +62,35 @@ function getMeasurementsFromMonitor() {
     });
 	
 }
+
+function getHostsFromMonitor() {
+	
+	var concatenatedUrl = getHostsUrl;
+	
+	var hostNameIdValue = document.getElementById('hostNameId').value;
+	if(hostNameIdValue) {
+		concatenatedUrl += "?name=" + hostNameIdValue;
+	}
+	
+	console.log(concatenatedUrl);
+	
+	$.ajax({
+        url: concatenatedUrl,
+        type: 'GET'
+    }).then(function(data) {
+		hostsData = data;
+		console.log(hostsData);
+		createHostsTable();
+    });
+	
+}
  
 function createStreamsTable() {
+	
+	var tableRef = document.getElementById('resourcesTableId').getElementsByTagName('tbody')[0];
+	while(tableRef.rows.length > 0) {
+		tableRef.deleteRow(0);
+	}
 	
 	var tableRef = document.getElementById('resourcesTableId').getElementsByTagName('tbody')[0];
 	for (var i = 0; i < streamsData.streams.length; ++i) {
@@ -116,6 +166,25 @@ function createSimpleMeasurementsTable() {
 	
 }
 
+function createHostsTable() {
+	
+	var tableRef = document.getElementById('hostsTableId').getElementsByTagName('tbody')[0];
+	while(tableRef.rows.length > 0) {
+		tableRef.deleteRow(0);
+	}
+	console.log(hostsData);
+	console.log(hostsData.hosts);
+		
+	for (var i = 0; i < hostsData.hosts.length; ++i) {
+		console.log(hostsData.hosts[i].value);
+		var newRow   = tableRef.insertRow(tableRef.rows.length);
+		var newHostNameCell  = newRow.insertCell(0);
+		var newHostNameText  = document.createTextNode(hostsData.hosts[i].hostName);
+		newHostNameCell.appendChild(newHostNameText);
+		
+	}
+	
+}
 
 $(function() {
     $('#side-menu').metisMenu();
@@ -159,4 +228,5 @@ $(function() {
         }
     }
 });
+
 
