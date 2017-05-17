@@ -172,6 +172,13 @@ app.get('/measurements/:id', function(req, res) {
 		//get measurements here
 		SensorMeasurement.find({resourceId:req.params.id}).sort({time: -1}).limit(limit).exec(function(err, measurements) {
 
+			if (err) {
+					console.log("Error:");
+					console.log(err);
+					res.status(401).send();		
+					return;
+			}
+
 			if (!measurements) {
 				console.log("no measurements found for id:" + req.params.id);
 			} else {
