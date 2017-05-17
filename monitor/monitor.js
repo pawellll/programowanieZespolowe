@@ -64,7 +64,7 @@ for (var i = 0; i < sensorsCount; ++i) {
 			}
 		});
 		
-	}).listen(sensorsData[i].port, sensorsData[i].address);
+	}).listen(sensorsData[i].port);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
