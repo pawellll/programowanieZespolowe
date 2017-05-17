@@ -6,6 +6,7 @@ mongoose.connect('mongodb://' + config.dbAddress + '/monitordb');
 
 var sensorMetadataSchema = new mongoose.Schema({
 	resourceId: String,
+	hostName:String,
 	unit: String,
 	metricName: String,
 	description: String,
@@ -41,7 +42,7 @@ for (var i = 0; i < sensorsCount; ++i) {
 			
 			if (data.resourceName) { // metadata json
 
-				console.log("received metadata from:" + data.resourceId);
+				console.log("received metadata from:" + data.resourceId + " hostName:" + data.hostName);
 
 				data.isComposite = 'false';
 
@@ -112,7 +113,7 @@ app.get('/measurements', function(req, res) {
 	SensorMetadata.find(params, function(err, metadatas) {
 		if (err) {
 			console.log(err);
-			res.status(401).send(); // TODO: what status should we return here?
+			res.status(500).send();
 			return;
 		}
 		
@@ -120,7 +121,7 @@ app.get('/measurements', function(req, res) {
 		for (var i = 0; i < metadatas.length; ++i) {		
 			resJson.streams.push({
 				id: metadatas[i].resourceId,
-				location: 'http://www.example.com/measurements/' + metadatas[i].resourceId,
+				location: config.location + metadatas[i].resourceId,
 				metadata: {
 					resourceName: metadatas[i].resourceName,
 					metricName: metadatas[i].metricName,
@@ -133,6 +134,79 @@ app.get('/measurements', function(req, res) {
 		res.status(200).json(resJson);	
 	});
 });
+
+app.get('/hosts', function(req, res) {
+	console.log("get /hosts");
+
+	var params = {};
+
+	if (req.query["name"]) {
+		params.hostName = createRegEx(req.query["name"]);
+	}
+
+	console.log("params:");
+	console.log(params);
+
+	SensorMetadata.find(params, function(err, foundSensors) {
+
+		if (err) {
+			console.log(err);
+			res.status(500).send();
+			return;
+		}
+		
+		var hostNames = [];
+		
+		for(var i = 0; i<foundSensors.length; ++i) {
+			var hostName = foundSensors[i].hostName;
+			hostNames.push(hostName);
+		}
+
+		hostNames = hostNames.unique();
+
+		var resJson = {hosts: []};
+
+		for(var i = 0 ; i < hostNames.length; ++i) {
+			var hostName = hostNames[i];
+			var streams = [];
+
+			addSensorsToHost(hostName, foundSensors, streams);
+
+			resJson.hosts.push({hostName, "streams":streams});
+		}
+
+		console.log("Found sensors:");
+		console.log(foundSensors);
+	
+		res.status(200).json(resJson);	
+	});
+});
+
+function addSensorsToHost(hostName, foundSensors, streams) {
+
+	for(var i = 0; i < foundSensors.length; ++i) {
+		if (foundSensors[i].hostName === hostName) {
+			var properSensorObject = convertToProperSensorObject(foundSensors[i]);
+			streams.push(properSensorObject);
+		}
+	}
+
+}
+
+function convertToProperSensorObject(dbSensorObject) {
+	var properSensorObject = {};
+
+	properSensorObject["id"] = dbSensorObject.resourceId;
+	properSensorObject["location"] = config.location + dbSensorObject.resourceId;
+	properSensorObject["metadata"] = {};
+	properSensorObject["metadata"]["resourceName"] = dbSensorObject.resourceName;
+	properSensorObject["metadata"]["metricName"] = dbSensorObject.metricName;
+	properSensorObject["metadata"]["unitName"] = dbSensorObject.unit;
+	properSensorObject["metadata"]["description"] = dbSensorObject.description;
+	properSensorObject["metadata"]["isComposite"] = dbSensorObject.isComposite;
+
+	return properSensorObject;
+}
 
 app.get('/measurements/:id', function(req, res) {
 	console.log("/measurements/{id} id:" + req.params.id + " limit:" + req.query.limit);
@@ -175,7 +249,7 @@ app.get('/measurements/:id', function(req, res) {
 			if (err) {
 					console.log("Error:");
 					console.log(err);
-					res.status(400).send(); // TODO: what status should be sent here?
+					res.status(500).send();
 					return;
 			}
 
@@ -371,5 +445,23 @@ function isInt(value) {
 }
 
 function createRegEx(base) {
-	return { $regex: "/*" + base + "*/" };
+	// return { $regex: base + "*/" };
+	return new RegExp(base + '*');
+}
+
+Array.prototype.contains = function(v) {
+    for(var i = 0; i < this.length; i++) {
+        if(this[i] === v) return true;
+    }
+    return false;
+};
+
+Array.prototype.unique = function() {
+    var arr = [];
+    for(var i = 0; i < this.length; i++) {
+        if(!arr.contains(this[i])) {
+            arr.push(this[i]);
+        }
+    }
+    return arr; 
 }
