@@ -137,6 +137,7 @@ app.get('/measurements', function(req, res) {
 });
 
 app.get('/hosts', function(req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
 	console.log("get /hosts");
 
 	var params = {};
@@ -210,6 +211,7 @@ function convertToProperSensorObject(dbSensorObject) {
 }
 
 app.get('/measurements/:id', function(req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
 	console.log("/measurements/{id} id:" + req.params.id + " limit:" + req.query.limit);
 	
 	var limit = 10;
@@ -278,6 +280,7 @@ app.get('/measurements/:id', function(req, res) {
 });
 
 app.post('/measurements', function(req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
 	
 	console.log("create composite, body:");
 	console.log(req.body);
@@ -334,6 +337,7 @@ function addMeasurement(body, res) {
 }
 
 app.delete('/measurements', function (req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
 	console.log("delete measurement");
 
 	var id = req.query.id;
