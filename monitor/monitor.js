@@ -79,6 +79,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/measurements', function(req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
 	console.log("get /measurements");
 
 	var params = {};
