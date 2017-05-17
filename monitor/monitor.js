@@ -112,7 +112,8 @@ app.get('/measurements', function(req, res) {
 	SensorMetadata.find(params, function(err, metadatas) {
 		if (err) {
 			console.log(err);
-			res.status(200).send();
+			res.status(401).send(); // TODO: what status should we return here?
+			return;
 		}
 		
 		var resJson = {streams: []};
@@ -129,8 +130,7 @@ app.get('/measurements', function(req, res) {
 			});
 		}
 		
-		res.json(resJson);
-		res.status(200).send();	
+		res.status(200).json(resJson);	
 	});
 });
 
@@ -188,8 +188,7 @@ app.get('/measurements/:id', function(req, res) {
 				result["measurements"] = table;
 			}
 
-			res.json(result);
-			res.status(200).send();
+			res.status(200).json(result);
 
 		});
 	});
