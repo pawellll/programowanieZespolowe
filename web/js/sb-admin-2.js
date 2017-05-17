@@ -1,7 +1,7 @@
 //var getMeasurementsUrl = 'http://127.0.0.1:8888/measurements';
-var getMeasurementsUrl = 'http://89.79.119.210:1330/measurements';
+var getMeasurementsUrl = 'http://89.79.119.210:1331/measurements';
 //var getHostsUrl = 'http://127.0.0.1:8888/hosts';
-var getHostsUrl = 'http://89.79.119.210:1330/hosts';
+var getHostsUrl = 'http://89.79.119.210:1331/hosts';
 
 var streamsData;
 var measurementsData;
