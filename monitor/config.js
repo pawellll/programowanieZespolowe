@@ -1,15 +1,13 @@
 var config = {};
 
 config.sensorsData = [
-	{address: '127.0.0.1', port: 9090},
-	{address: '127.0.0.1', port: 9091},
-	{address: '127.0.0.1', port: 9092}
+	{port: 1333}
 ];
 
 config.sensorsCount = config.sensorsData.length;
 
 config.dbAddress = 'localhost';
 
-config.httpPort = 8888;
+config.httpPort = 1331;
 
 module.exports = config;
