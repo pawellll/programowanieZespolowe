@@ -12,6 +12,7 @@ class SensorConfiguration {
     private int interval; // in seconds
     private int metaDataInterval; // in seconds
     private String address;
+    private String hostName;
     private int port;
     private Metric mMetric;
 
@@ -24,6 +25,7 @@ class SensorConfiguration {
             in = new FileInputStream(new File(fileName));
             properties.loadFromXML(in);
             address = properties.getProperty("address");
+            hostName = properties.getProperty("hostName");
             interval = Integer.valueOf(properties.getProperty("interval_values")) * 1000;
             metaDataInterval = Integer.valueOf(properties.getProperty("interval_metadata")) * 1000;
             port = Integer.valueOf(properties.getProperty("port"));
@@ -51,6 +53,10 @@ class SensorConfiguration {
 
     String getAddress() {
         return address;
+    }
+
+    String getHostName() {
+        return hostName;
     }
 
     int getPort() {

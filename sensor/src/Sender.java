@@ -14,13 +14,15 @@ class Sender {
     private int port;
     private String resourceId;
     private String resourceName;
+    private String hostName;
     private Metric metric;
 
-    Sender(String address, int port, String resId,String resName, Metric metric) {
+    Sender(String address, String hostName, int port, String resId,String resName, Metric metric) {
         this.address = address;
         this.port = port;
-        resourceId = resId;
-        resourceName = resName;
+        this.resourceId = resId;
+        this.hostName = hostName;
+        this.resourceName = resName;
         this.metric = metric;
     }
 
@@ -52,7 +54,7 @@ class Sender {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
             String formattedDate = formatter.format(currentDate);
 
-            String message = generateMetadataMessage(resourceId,formattedDate,resourceName,metric.getMetricsName(),metric.getMetricUnitName(), metric.getDescription());
+            String message = generateMetadataMessage(resourceId, hostName, formattedDate, resourceName, metric.getMetricsName(), metric.getMetricUnitName(), metric.getDescription());
 
             writer.println(message);
             System.out.println("sendValues");
@@ -70,7 +72,7 @@ class Sender {
         return message.toString(0);
     }
 
-    private String generateMetadataMessage(String resourceId, String time, String resourceName, String metricName, String unit, String description) {
+    private String generateMetadataMessage(String resourceId, String hostName, String time, String resourceName, String metricName, String unit, String description) {
         JSONObject message = new JSONObject();
         message.put("time", time);
         message.put("resourceId", resourceId);
@@ -78,6 +80,7 @@ class Sender {
         message.put("metricName", metricName);
         message.put("unit", unit);
         message.put("description", description);
+        message.put("hostName", hostName);
 
         return message.toString(0);
     }

@@ -12,7 +12,7 @@ class MeasureManager {
     }
 
     void scheduleMeasurements(Metric metric, String resourceId, String resName) {
-        mSender = new Sender(configuration.getAddress(), configuration.getPort(), resourceId,resName, metric);
+        mSender = new Sender(configuration.getAddress(),configuration.getHostName(), configuration.getPort(), resourceId,resName, metric);
 
         Timer timer = new Timer();
 
