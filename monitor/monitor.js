@@ -1,8 +1,23 @@
 var config = require('./config');
 
+// Database connection
 var mongoose = require('mongoose');
-
 mongoose.connect('mongodb://' + config.dbAddress + '/monitordb');
+
+// Logging
+var winston = require('winston');
+winston.add(winston.transports.File, {
+    filename: 'output.log',
+    handleExceptions: true,
+    humanReadableUnhandledException: true,
+    json: false
+  });
+winston.exitOnError = false;
+
+process.on('uncaughtException', function(err) {
+  winston.error('Caught exception: ' + err);
+  process.exit();
+});
 
 var sensorMetadataSchema = new mongoose.Schema({
 	resourceId: String,
@@ -42,25 +57,25 @@ for (var i = 0; i < sensorsCount; ++i) {
 			
 			if (data.resourceName) { // metadata json
 
-				console.log("received metadata from:" + data.resourceId + " hostName:" + data.hostName);
+				winston.info("received metadata from:" + data.resourceId + " hostName:" + data.hostName);
 
 				data.isComposite = 'false';
 
 				SensorMetadata.findOne({resourceId: data.resourceId}, function(err, metadata) {
 					if (metadata) {
 						SensorMetadata.update({resourceId: data.resourceId}, data, function(err, metadata) {
-							if (err) console.log(err);
+							if (err) winston.error(err);
 						});
 					} else {
 						SensorMetadata.create(data, function(err, metadata) {
-							if (err) console.log(err);
+							if (err) winston.error(err);
 						});
 					}
 				});
 			} else { // measurement json
-				console.log("received measurement from:" + data.resourceId);
+				winston.info("received measurement from:" + data.resourceId);
 				SensorMeasurement.create(data, function(err, measurement) {
-					if (err) console.log(err);
+					if (err) winston.error(err);
 				});
 			}
 		});
@@ -80,7 +95,8 @@ app.use(bodyParser.json());
 
 app.get('/measurements', function(req, res) {
 	res.header('Access-Control-Allow-Origin', '*');
-	console.log("get /measurements");
+
+	winston.info("get /measurements");
 
 	var params = {};
 
@@ -108,12 +124,12 @@ app.get('/measurements', function(req, res) {
 		params.description = createRegEx(req.query["description"]);
 	}
 
-	console.log("params:");
-	console.log(params);
+	winston.info("params:");
+	winston.info(params);
 
 	SensorMetadata.find(params, function(err, metadatas) {
 		if (err) {
-			console.log(err);
+			winston.error(err);
 			res.status(500).send();
 			return;
 		}
@@ -138,7 +154,8 @@ app.get('/measurements', function(req, res) {
 
 app.get('/hosts', function(req, res) {
 	res.header('Access-Control-Allow-Origin', '*');
-	console.log("get /hosts");
+	
+	winston.info("get /hosts");
 
 	var params = {};
 
@@ -146,13 +163,13 @@ app.get('/hosts', function(req, res) {
 		params.hostName = createRegEx(req.query["name"]);
 	}
 
-	console.log("params:");
-	console.log(params);
+	winston.info("params:");
+	winston.info(params);
 
 	SensorMetadata.find(params, function(err, foundSensors) {
 
 		if (err) {
-			console.log(err);
+			winston.error(err);
 			res.status(500).send();
 			return;
 		}
@@ -177,8 +194,8 @@ app.get('/hosts', function(req, res) {
 			resJson.hosts.push({hostName, "streams":streams});
 		}
 
-		console.log("Found sensors:");
-		console.log(foundSensors);
+		winston.info("Found sensors:");
+		winston.info(foundSensors);
 	
 		res.status(200).json(resJson);	
 	});
@@ -212,7 +229,8 @@ function convertToProperSensorObject(dbSensorObject) {
 
 app.get('/measurements/:id', function(req, res) {
 	res.header('Access-Control-Allow-Origin', '*');
-	console.log("/measurements/{id} id:" + req.params.id + " limit:" + req.query.limit);
+
+	winston.info("/measurements/{id} id:" + req.params.id + " limit:" + req.query.limit);
 	
 	var limit = 10;
 
@@ -221,7 +239,7 @@ app.get('/measurements/:id', function(req, res) {
 	}
 
 	if (!isInt(limit)) {
-		console.log("incorrect argument: limit is not integer");
+		winston.info("incorrect argument: limit is not integer");
     	res.status(400).send();	
     	return;		
 	}
@@ -230,12 +248,12 @@ app.get('/measurements/:id', function(req, res) {
 
 	SensorMetadata.findOne({resourceId: req.params.id}, function(err, metadata) {
 		if (!metadata) {
-			console.log("sensor with given id not found");
+			winston.info("sensor with given id not found");
 			res.status(404).send();		
 			return;
 		}
 
-		console.log(metadata);
+		winston.info(metadata);
 
 		result["metadata"] = {};
 		result["metadata"]["resourceName"] = metadata.resourceId;
@@ -250,16 +268,16 @@ app.get('/measurements/:id', function(req, res) {
 		SensorMeasurement.find({resourceId:req.params.id}).sort({time: -1}).limit(Number(limit)).exec(function(err, measurements) {
 
 			if (err) {
-					console.log("Error:");
-					console.log(err);
+					winston.error("Error:");
+					winston.error(err);
 					res.status(500).send();
 					return;
 			}
 
 			if (!measurements) {
-				console.log("no measurements found for id:" + req.params.id);
+				winston.info("no measurements found for id:" + req.params.id);
 			} else {
-				console.log("adding " + measurements.length + " measurements");
+				winston.info("adding " + measurements.length + " measurements");
 
 				var table = []
 
@@ -282,13 +300,13 @@ app.get('/measurements/:id', function(req, res) {
 app.post('/measurements', function(req, res) {
 	res.header('Access-Control-Allow-Origin', '*');
 	
-	console.log("create composite, body:");
-	console.log(req.body);
+	winston.info("create composite, body:");
+	winston.info(req.body);
 
 	if (checkParameters(req.body)) {
 		addMeasurement(req.body, res);
 	} else {
-		console.log("incomplete or incorrect parameters");
+		winston.info("incomplete or incorrect parameters");
 		res.status(400).send();
 	}
 
@@ -302,7 +320,7 @@ function addMeasurement(body, res) {
 	SensorMetadata.findOne({resourceId: body.id}, function(err, metadata) {
 
 		if (!metadata) {
-			console.log("measurment to create composite not found")
+			winston.info("measurment to create composite not found")
 			res.status(400).send();		
 			return;
 		}
@@ -320,7 +338,7 @@ function addMeasurement(body, res) {
 		SensorMetadata.create(data, function(err, metadata) { 
 
 			if (err) {
-				console.log("err:" + err); 
+				winston.error("err:" + err); 
 				res.status(400).send();
 			} else {
 				res.status(201).send();
@@ -328,17 +346,18 @@ function addMeasurement(body, res) {
 
 		});
 
-		console.log("Adding job with params period:" + body.period + " id:" + body.id + " resourceId:" + data.resourceId);
+		winston.info("Adding job with params period:" + body.period + " id:" + body.id + " resourceId:" + data.resourceId);
 
 		var jobId = setInterval(function() { movingAverage(body.period, body.id, data.resourceId); }, body.interval * 1000);
 		compositeJobs[data.resourceId] = jobId;
-		console.log(compositeJobs);
+		winston.info(compositeJobs);
 	});
 }
 
 app.delete('/measurements', function (req, res) {
 	res.header('Access-Control-Allow-Origin', '*');
-	console.log("delete measurement");
+
+	winston.info("delete measurement");
 
 	var id = req.query.id;
 
@@ -351,25 +370,25 @@ app.delete('/measurements', function (req, res) {
 	SensorMetadata.findOne({resourceId: id}, function(err, metadata) {
 
 		if (!metadata || !metadata.isComposite) {
-			console.log("composite measurement with id:" + id + " doesn't exist");
+			winston.info("composite measurement with id:" + id + " doesn't exist");
 			res.status(404).send();		
 			return;
 		}
 
-		console.log("delete measurement with id:" + id);
+		winston.info("delete measurement with id:" + id);
 
 	
 		SensorMetadata.remove({resourceId: id}, function(err, removed) {
 
 			if (err) {
-				console.log("delete metadata error:" + err);
+				winston.error("delete metadata error:" + err);
 			} else {
-				console.log("delete metadata success. Stopping the job and deleting measurements");
+				winston.info("delete metadata success. Stopping the job and deleting measurements");
 				
 				var jobObj = compositeJobs[id];
 
 				if (jobObj) {
-					console.log("stopping the job");
+					winston.info("stopping the job");
 					clearInterval(jobObj);
 				} else {
 					console.warn("there's no job in collection for given id");
@@ -379,9 +398,9 @@ app.delete('/measurements', function (req, res) {
 				SensorMetadata.remove({resourceId: id}, function(err, removed) {
 
 					if (err) {
-						console.log("delete measurement error:" + err);
+						winston.error("delete measurement error:" + err);
 					} else {
-						console.log("delete measurement success");
+						winston.info("delete measurement success");
 						res.status(200).send();			
 					}
 
@@ -401,7 +420,7 @@ function movingAverage(period, id, compositeId) {
 	SensorMeasurement.find({resourceId: id, time: {$gt: currentTime.setSeconds(currentTime.getSeconds() - period)}}, function(err, measurements) {
 
 		if (!measurements) {
-			console.log("measurement undefined, id:" + id + " compositeId:" + compositeId);
+			winston.info("measurement undefined, id:" + id + " compositeId:" + compositeId);
 			return;
 		}
 
@@ -421,9 +440,9 @@ function movingAverage(period, id, compositeId) {
 
 		SensorMeasurement.create(data, function(err, metadata) { 
 			if (err) { 
-				console.log(err); 
+				winston.error(err); 
 			} else {
-				console.log("Composite measurement added");
+				winston.info("Composite measurement added");
 			}
 		});	
 
