@@ -81,6 +81,7 @@ for (var i = 0; i < sensorsCount; ++i) {
 			}
 		});
 
+		// Handle listener errors
 		socket.on("error", function(err) {
 			winston.error(err);
 		});
