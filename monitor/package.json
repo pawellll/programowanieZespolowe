@@ -1,0 +1,19 @@
+{
+  "name": "app",
+  "version": "0.0.1",
+  "description": "Our small app :)",
+
+  "license": "UNLICENSED",
+
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pawellll/programowanieZespolowe.git"
+  },
+
+  "dependencies": {
+    "express": "latest",
+    "mongoose": "latest",
+    "body-parser": "latest",
+    "winston": "latest"
+  }
+}
