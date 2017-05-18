@@ -14,6 +14,7 @@ winston.add(winston.transports.File, {
   });
 winston.exitOnError = false;
 
+// Uncaught exceptions handling
 process.on('uncaughtException', function(err) {
   winston.error('Caught exception: ' + err);
   process.exit();
