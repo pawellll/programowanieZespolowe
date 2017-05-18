@@ -1,6 +1,7 @@
 ///add chartPlotter.js before this file!
 var graphCanvasId = "measurementsGraph";
 var measurementsData = null;
+var getMeasurementsUrl = 'http://89.79.119.210:1331/measurements';
 
 function createMeasurementsGraph(measurementIdValue) {	
 	var measurementGraph = new chartPlotter(graphCanvasId);
