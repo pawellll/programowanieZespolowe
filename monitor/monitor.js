@@ -79,6 +79,10 @@ for (var i = 0; i < sensorsCount; ++i) {
 				});
 			}
 		});
+
+		socket.on("error", function(err) {
+			winston.error(err);
+		});
 		
 	}).listen(sensorsData[i].port);
 }
