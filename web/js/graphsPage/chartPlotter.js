@@ -99,8 +99,8 @@ function chartPlotter(canvasId, type){
 	
 	this.addLabels = function(labels, xlabel, ylabel){
 		this.config.data.labels = labels;
-		this.options.scales.xAxes.scaleLabel.labelString = xlabel;
-		this.options.scales.yAxes.scaleLabel.labelString = ylabel;
+		this.options.scales.xAxes.scaleLabel = {labelString: xlabel};
+		this.options.scales.yAxes.scaleLabel = {labelString: ylabel};
 	}
 	
 	this.plot = function(){		
