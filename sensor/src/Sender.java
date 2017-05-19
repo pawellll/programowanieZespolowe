@@ -16,6 +16,7 @@ class Sender {
     private String resourceName;
     private String hostName;
     private Metric metric;
+    private static String connectionErrorMessage = "Wystąpił błąd podczas próby połączenia z Monitorem";
 
     Sender(String address, String hostName, int port, String resId,String resName, Metric metric) {
         this.address = address;
@@ -41,8 +42,14 @@ class Sender {
             System.out.println("sendValues");
 
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            log(connectionErrorMessage);
         }
+    }
+
+    private void log(String message)
+    {
+        System.out.println(message);
     }
 
     void sendMetadata() {
@@ -60,7 +67,8 @@ class Sender {
             System.out.println("sendValues");
 
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            log(connectionErrorMessage);
         }
     }
 

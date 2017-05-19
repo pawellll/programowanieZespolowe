@@ -11,8 +11,8 @@ class MeasureManager {
         this.configuration = configuration;
     }
 
-    void scheduleMeasurements(Metric metric, String resourceId, String resName) {
-        mSender = new Sender(configuration.getAddress(),configuration.getHostName(), configuration.getPort(), resourceId,resName, metric);
+    void scheduleMeasurements(Metric metric, String resName) {
+        mSender = new Sender(configuration.getAddress(),configuration.getHostName(), configuration.getPort(), configuration.getResourceId(),resName, metric);
 
         Timer timer = new Timer();
 

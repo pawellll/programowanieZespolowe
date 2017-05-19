@@ -15,6 +15,7 @@ class SensorConfiguration {
     private String hostName;
     private int port;
     private Metric mMetric;
+    private String resourceId;
 
     SensorConfiguration(String fileName) {
         Properties properties = new Properties();
@@ -29,6 +30,7 @@ class SensorConfiguration {
             interval = Integer.valueOf(properties.getProperty("interval_values")) * 1000;
             metaDataInterval = Integer.valueOf(properties.getProperty("interval_metadata")) * 1000;
             port = Integer.valueOf(properties.getProperty("port"));
+            resourceId = properties.getProperty("resource_id");
             defineMetricToMeasure(properties);
 
         } catch (IOException e) {
@@ -69,5 +71,10 @@ class SensorConfiguration {
 
     int getMetadataInterval() {
         return metaDataInterval;
+    }
+
+    String getResourceId()
+    {
+        return resourceId;
     }
 }
