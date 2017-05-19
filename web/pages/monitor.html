@@ -76,7 +76,7 @@
                         <li>
                             <a href="monitor.html"><i class="fa fa-dashboard fa-fw"></i> Monitors</a>
                         </li>
-			    <!-- Hosty -->
+						<!-- Hosty -->
                         <li>
                             <a href="hosts.html"><i class="fa fa-dashboard fa-fw"></i> Hosts</a>
                         </li>
@@ -142,24 +142,40 @@
                     <h1 class="page-header">Monitors</h1>
                 </div>
             </div>
-			
-            <div class="tmp-form">
-                <!-- Form -->
-                <form id="tmp" method="post" action="#">
-                    <!-- Left Inputs -->
-                    <div class="col-xs-6 wow animated slideInLeft" data-wow-delay=".5s">
-                        <!-- Name -->
-                        <input type="text" name="name" id="name" required="required" class="form" placeholder="Name" />
-                        <!-- Email -->
-                        <input type="text" name="attr1" id="attr1" required="required" class="form" placeholder="Attr1" />
-                        <!-- Subject -->
-                        <input type="text" name="attr2" id="attr2" required="required" class="form" placeholder="Attr2" />
-						<button type="submit" id="submit" name="submit" class="form-btn semibold">Add monitor</button> 
+						
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Add monitors
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">							
+							<div class="tmp-form">
+								<!-- Form -->
+								<form id="tmp" method="post" action="#">
+									<!-- Left Inputs -->
+									<div class="col-xs-6 wow animated slideInLeft" data-wow-delay=".5s">
+										<!-- Name -->
+										<input type="text" name="name" id="newMonitorName" required="required" class="form" placeholder="Name" />
+										<!-- IP -->
+										<input type="text" name="attr1" id="newMonitorIp" required="required" class="form" placeholder="Ip address" />
+										
+										<button type="submit" action="javascript:void(0);" id="submit" name="submit" onClick="addNewMonitorClick()" class="form-btn semibold">Add monitor</button> 
+									</div>
+									<!-- Clear -->
+									<div class="clear"></div>
+								</form>
+							</div>
+                        </div>
+                        <!-- /.panel-body -->
                     </div>
-                    <!-- Clear -->
-                    <div class="clear"></div>
-                </form>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
             </div>
+            <!-- /.row -->
 
             <div class="row">
                 <div class="col-lg-12">
@@ -173,30 +189,11 @@
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Attr1</th>
-                                        <th>Attr2</th>
-                                        <th>Select</th>
+                                        <th>IP</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr class="odd gradeX">
-                                        <td>Trident</td>
-                                        <td>Internet Explorer 4.0</td>
-                                        <td>Win 95+</td>
-                                        <td class="center"><button id="submit" name="submit" class="form-btn semibold">Select monitor</button><button id="submit" name="submit" class="form-btn semibold">Remove</button></td>
-                                    </tr>
-                                    <tr class="even gradeC">
-                                        <td>Trident</td>
-                                        <td>Internet Explorer 5.0</td>
-                                        <td>Win 95+</td>
-                                        <td class="center"><button id="submit" name="submit" class="form-btn semibold">Select monitor</button><button id="submit" name="submit" class="form-btn semibold">Remove</button></td>
-                                    </tr>
-                                    <tr class="odd gradeA">
-                                        <td>Trident</td>
-                                        <td>Internet Explorer 5.5</td>
-                                        <td>Win 95+</td>
-                                        <td class="center"><button id="submit" name="submit" class="form-btn semibold">Select monitor</button><button id="submit" name="submit" class="form-btn semibold">Remove</button></td>
-                                    </tr>
+                                <tbody id="monitorList">
                                 </tbody>
                             </table>
                         </div>
@@ -224,6 +221,10 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
+	<!-- Monitors page specific scripts -->
+	<script src="../js/monitorPage/monitorManager.js"></script>
+	<script src="../js/monitorPage/monitorPage.js"></script>
+	
     <!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
     $(document).ready(function() {

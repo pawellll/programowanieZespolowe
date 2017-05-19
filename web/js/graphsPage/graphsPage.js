@@ -1,7 +1,7 @@
-///add chartPlotter.js before this file!
+///add chartPlotter.js and monitorManager.js before this file!
 var graphCanvasId = "measurementsGraph";
 var measurementsData = null;
-var getMeasurementsUrl = 'http://89.79.119.210:1331/measurements';
+var getMeasurementsDefaultUrl = 'http://89.79.119.210:1331/measurements';
 
 function createMeasurementsGraph(measurementIdValue) {	
 	var measurementGraph = new chartPlotter(graphCanvasId);
@@ -22,8 +22,22 @@ function createMeasurementsGraph(measurementIdValue) {
 	measurementGraph.plot();
 }
 
-function getMeasurementsFromMonitor(measurementIdValue, limitIdValue) {	
-	var concatenatedUrl = getMeasurementsUrl + "/" + measurementIdValue;	
+function getMeasurementsFromMonitor(measurementIdValue, limitIdValue, monitorName) {	
+	var concatenatedUrl
+	var currentMonitorObject = getCurrentMonitorObject();
+	
+	if(currentMonitorObject == null && monitorName == null){
+		concatenatedUrl = getMeasurementsDefaultUrl + "/" + measurementIdValue;	
+	}
+	else{
+		var monitor = getMonitor(monitorName);
+		if(monitor == null){
+			concatenatedUrl = 'http://' + currentMonitorObject.ip + "/measurements/" + measurementIdValue;
+		}
+		else{
+			concatenatedUrl = 'http://' + monitor.ip + "/measurements/" + measurementIdValue;			
+		}
+	}
 	
 	if(limitIdValue) {
 		concatenatedUrl += "?limit=" + limitIdValue;
@@ -43,5 +57,26 @@ function getMeasurementsFromMonitor(measurementIdValue, limitIdValue) {
 function selectMeasurementClick(){
 	var measurementIdValue = document.getElementById('measurementId').value;
 	var limitIdValue = document.getElementById('limitId').value;
-	getMeasurementsFromMonitor(measurementIdValue, limitIdValue);	
+	var monitorName = document.getElementById('monitorName').value;
+	
+	if(measurementIdValue == "") return;
+	
+	getMeasurementsFromMonitor(measurementIdValue, limitIdValue, monitorName);	
 }
+
+function refreshMonitorCombo(){
+	var element = $("#monitorName");
+	element.children().detach();
+	
+	var monitors = getMonitors();
+	
+	var monitorNames = Object.keys(monitors);
+	
+	element.append("<option name='Empty'>Choose</option>");
+		
+	$.each(monitorNames, function(index, name) {
+		element.append("<option name='"+name+"'>"+name+"</option>");			
+	});	
+}
+
+refreshMonitorCombo();
