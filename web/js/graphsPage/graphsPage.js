@@ -26,7 +26,7 @@ function getMeasurementsFromMonitor(measurementIdValue, limitIdValue, monitorNam
 	var concatenatedUrl
 	var currentMonitorObject = getCurrentMonitorObject();
 	
-	if(currentMonitorObject == null && monitorName == null){
+	if(currentMonitorObject == null && monitorName == ""){
 		concatenatedUrl = getMeasurementsDefaultUrl + "/" + measurementIdValue;	
 	}
 	else{
