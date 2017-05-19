@@ -8,4 +8,5 @@
     <entry key="port">9090</entry>
     <entry key="metric">CPU</entry>
     <entry key="hostName">thisHostName</entry>
+    <entry key="resource_id">8ae7e236-ddbd-4688-a679-cf81b422cf1d</entry>
 </properties>
