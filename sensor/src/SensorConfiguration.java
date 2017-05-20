@@ -2,11 +2,9 @@ import metrics.CpuMetric;
 import metrics.MemoryMetric;
 import metrics.Metric;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
+import java.util.UUID;
 
 class SensorConfiguration {
     private int interval; // in seconds
@@ -20,6 +18,7 @@ class SensorConfiguration {
     SensorConfiguration(String fileName) {
         Properties properties = new Properties();
         InputStream in;
+        OutputStream out;
         try {
             /*System.out.println("Working Directory = " +
                     System.getProperty("user.dir"));*/
@@ -30,11 +29,35 @@ class SensorConfiguration {
             interval = Integer.valueOf(properties.getProperty("interval_values")) * 1000;
             metaDataInterval = Integer.valueOf(properties.getProperty("interval_metadata")) * 1000;
             port = Integer.valueOf(properties.getProperty("port"));
-            resourceId = properties.getProperty("resource_id");
+            resourceId = obtainResourceId(properties,"resource_id");
+            storePropertiesToXML(properties,fileName);
+
             defineMetricToMeasure(properties);
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private String obtainResourceId(Properties properties, String resourceProperty) {
+        String resourceId = properties.getProperty(resourceProperty);
+        if (resourceId == null) {
+            resourceId = UUID.randomUUID().toString();
+            properties.setProperty(resourceProperty, resourceId);
+        }
+        return resourceId;
+    }
+
+    private void storePropertiesToXML(Properties properties, String filename)
+    {
+        File file = new File(filename);
+        FileOutputStream fileOut;
+        try {
+            fileOut = new FileOutputStream(file);
+            properties.storeToXML(fileOut, "ResourceId was changed");
+            fileOut.close();
+        } catch (IOException e) {
+            System.out.println("Wystąpił błąd podczas zapisu do pliku konfiguracyjnego");
         }
     }
 
