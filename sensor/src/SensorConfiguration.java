@@ -14,6 +14,7 @@ class SensorConfiguration {
     private int port;
     private Metric mMetric;
     private String resourceId;
+    private static String propertiesComment = "interval in seconds. Available Metrics: CPU, MEMORY";
 
     SensorConfiguration(String fileName) {
         Properties properties = new Properties();
@@ -54,7 +55,7 @@ class SensorConfiguration {
         FileOutputStream fileOut;
         try {
             fileOut = new FileOutputStream(file);
-            properties.storeToXML(fileOut, "ResourceId was changed");
+            properties.storeToXML(fileOut, propertiesComment);
             fileOut.close();
         } catch (IOException e) {
             System.out.println("Wystąpił błąd podczas zapisu do pliku konfiguracyjnego");
