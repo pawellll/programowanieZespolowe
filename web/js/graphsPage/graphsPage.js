@@ -22,21 +22,15 @@ function createMeasurementsGraph(measurementIdValue) {
 	measurementGraph.plot();
 }
 
-function getMeasurementsFromMonitor(measurementIdValue, limitIdValue, monitorName) {	
+function getMeasurementsFromMonitor(measurementIdValue, limitIdValue) {	
 	var concatenatedUrl
 	var currentMonitorObject = getCurrentMonitorObject();
 	
-	if(currentMonitorObject == null && monitorName == ""){
+	if(currentMonitorObject == null ){
 		concatenatedUrl = getMeasurementsDefaultUrl + "/" + measurementIdValue;	
 	}
 	else{
-		var monitor = getMonitor(monitorName);
-		if(monitor == null){
-			concatenatedUrl = 'http://' + currentMonitorObject.ip + "/measurements/" + measurementIdValue;
-		}
-		else{
-			concatenatedUrl = 'http://' + monitor.ip + "/measurements/" + measurementIdValue;			
-		}
+		concatenatedUrl = 'http://' + currentMonitorObject.ip + "/measurements/" + measurementIdValue;
 	}
 	
 	if(limitIdValue) {
@@ -57,26 +51,8 @@ function getMeasurementsFromMonitor(measurementIdValue, limitIdValue, monitorNam
 function selectMeasurementClick(){
 	var measurementIdValue = document.getElementById('measurementId').value;
 	var limitIdValue = document.getElementById('limitId').value;
-	var monitorName = document.getElementById('monitorName').value;
 	
 	if(measurementIdValue == "") return;
 	
-	getMeasurementsFromMonitor(measurementIdValue, limitIdValue, monitorName);	
+	getMeasurementsFromMonitor(measurementIdValue, limitIdValue);	
 }
-
-function refreshMonitorCombo(){
-	var element = $("#monitorName");
-	element.children().detach();
-	
-	var monitors = getMonitors();
-	
-	var monitorNames = Object.keys(monitors);
-	
-	element.append("<option name='Empty'>Choose</option>");
-		
-	$.each(monitorNames, function(index, name) {
-		element.append("<option name='"+name+"'>"+name+"</option>");			
-	});	
-}
-
-refreshMonitorCombo();

@@ -58,8 +58,13 @@ function getMonitor(name){
 }
 
 function removeMonitor(name){
-	var monitors = getMonitors();
 	delete window.monitorsObject[name];
+	var current = getCurrentMonitorObject();
+	if(current.name == name){
+		var keys = Object.keys(window.monitorsObject);
+		if(keys.length > 0)
+			setCurrentMonitor(keys[0]);
+	}
 	saveMonitors();
 }
 

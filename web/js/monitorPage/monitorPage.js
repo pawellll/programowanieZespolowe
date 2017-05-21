@@ -8,6 +8,10 @@ function addNewMonitorClick(){
 	
 	var monitor = {ip : monitorIp };
 	
+	if(Object.keys(getMonitors()) == 0){
+		setCurrentMonitor(monitorName);
+	} 
+	
 	addMonitor(monitorName, monitor);	
 	refreshMonitorList()
 }
