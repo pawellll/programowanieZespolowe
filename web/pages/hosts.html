@@ -144,13 +144,24 @@
             </div>
 			
 
-					<div class="col-xs-8 wow animated slideInLeft" data-wow-delay=".5s">
-						<input type="text" name="hostNameName" id="hostNameId" class="form" placeholder="Host name" />
-						
-						<button type="submit" id="submitHostId" name="submitHostName" class="form-btn semibold" onClick="getHostsFromMonitor();">Filter</button> 
+			<div class="panel panel-default">
+                <div class="panel-heading">
+                    Filter hosts
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">							
+					<div class="tmp-form">
+						<div class="col-xs-8 wow animated slideInLeft" data-wow-delay=".5s">
+							<input type="text" name="hostNameName" id="hostNameId" class="form" placeholder="Host name" />
+							
+							<button type="submit" id="submitHostId" name="submitHostName" class="form-btn semibold" onClick="getHostsFromMonitor();">Filter</button> 
+						</div>
+						<!-- Clear -->
+						<div class="clear"></div>
 					</div>
-					<!-- Clear -->
-					<div class="clear"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
 
             <div class="row">
                 <div class="col-lg-12">
