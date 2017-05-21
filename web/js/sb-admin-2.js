@@ -2,10 +2,14 @@
 var getMeasurementsUrl = 'http://89.79.119.210:1331/measurements';
 //var getHostsUrl = 'http://127.0.0.1:8888/hosts';
 var getHostsUrl = 'http://89.79.119.210:1331/hosts';
+//var address = 'http://127.0.0.1:8888';
+var address = 'http://89.79.119.210:1331';
 
 var streamsData;
 var measurementsData;
 var hostsData;
+
+var resourceIdGlobal = null;
 
 function getStreamsFromMonitor() {
 	
@@ -63,6 +67,34 @@ function getMeasurementsFromMonitor() {
 	
 }
 
+function getMeasurementsFromMonitorByResourceId() {
+	
+	var concatenatedUrl = getMeasurementsUrl;
+	resourceIdGlobal = localStorage.getItem("resourceGlobalIdStorage");
+	console.log(resourceIdGlobal);
+	if(resourceIdGlobal) {
+		concatenatedUrl += "/" + resourceIdGlobal;
+	
+		//var limitIdValue = document.getElementById('limitId').value;
+		//if(limitIdValue) {
+		//	concatenatedUrl += "?limit=" + limitIdValue;
+		//}
+		
+		console.log(concatenatedUrl);
+		
+		$.ajax({
+			url: concatenatedUrl,
+			type: 'GET'
+		}).then(function(data) {
+			measurementsData = data;
+			console.log(measurementsData);
+			createSimpleMeasurementsTable();
+		});
+	}
+	
+	
+}
+
 function getHostsFromMonitor() {
 	
 	var concatenatedUrl = getHostsUrl;
@@ -94,20 +126,18 @@ function createStreamsTable() {
 	
 	var tableRef = document.getElementById('resourcesTableId').getElementsByTagName('tbody')[0];
 	for (var i = 0; i < streamsData.streams.length; ++i) {
-		var newRow   = tableRef.insertRow(tableRef.rows.length);
-		var newIdCell  = newRow.insertCell(0);
-		var newIdText  = document.createTextNode(streamsData.streams[i].id);
-		newIdCell.appendChild(newIdText);
 		
-		var newNameCell  = newRow.insertCell(1);
+		var newRow   = tableRef.insertRow(tableRef.rows.length);
+		
+		var newNameCell  = newRow.insertCell(0);
 		var newNameText  = document.createTextNode(streamsData.streams[i].metadata.resourceName);
 		newNameCell.appendChild(newNameText);
 		
-		var newMetricCell  = newRow.insertCell(2);
+		var newMetricCell  = newRow.insertCell(1);
 		var newMetricText  = document.createTextNode(streamsData.streams[i].metadata.metricName);
 		newMetricCell.appendChild(newMetricText);
 		
-		var newDescriptionCell  = newRow.insertCell(3);
+		var newDescriptionCell  = newRow.insertCell(2);
 		var newDescriptionText  = document.createTextNode(streamsData.streams[i].metadata.description);
 		newDescriptionCell.appendChild(newDescriptionText);
 		
@@ -115,28 +145,36 @@ function createStreamsTable() {
 		if(streamsData.streams[i].metadata.unitName !== undefined) {
 			unitText = streamsData.streams[i].metadata.unitName;
 		}
-		var newUnitCell  = newRow.insertCell(4);
+		var newUnitCell  = newRow.insertCell(3);
 		var newUnitText  = document.createTextNode(unitText);
 		newUnitCell.appendChild(newUnitText);
 		
 		
-		var newButtonCell  = newRow.insertCell(5);
+		var newButtonCell  = newRow.insertCell(4);
 		
-		//var newEditButton  = document.createElement("BUTTON");
-		//var newEditButtonText = document.createTextNode("Edit");
-		//newEditButton.setAttribute("id", "editButtonId" + i);
-		//newEditButton.setAttribute("name", "editButtonName" + i);
-		//newEditButton.setAttribute("className", "form-btn semibold");
-		//newEditButton.appendChild(newEditButtonText);
-		//newButtonCell.appendChild(newEditButton);
+		var newMeasurementsButton  = document.createElement("BUTTON");
+		var newMeasurementsButtonText = document.createTextNode("Go to measurements");
+		newMeasurementsButton.setAttribute("id", streamsData.streams[i].id);
+		newMeasurementsButton.setAttribute("name", "editButtonName" + i);
+		newMeasurementsButton.setAttribute("className", "form-btn semibold");
+		newMeasurementsButton.appendChild(newMeasurementsButtonText);
 		
-		var newRemoveButton  = document.createElement("BUTTON");
-		var newRemoveButtonText = document.createTextNode("Remove");
-		newRemoveButton.setAttribute("id", "removeButtonId" + i);
-		newRemoveButton.setAttribute("name", "removeButtonName" + i);
-		newRemoveButton.setAttribute("className", "form-btn semibold");
-		newRemoveButton.appendChild(newRemoveButtonText);
-		newButtonCell.appendChild(newRemoveButton);
+		newMeasurementsButton.onclick = function() {
+			resourceIdGlobal = this.getAttribute("id");
+			localStorage.setItem("resourceGlobalIdStorage", resourceIdGlobal);
+			console.log(resourceIdGlobal);
+			
+			window.location.href = address + "/pages/simple.html";
+		}
+		newButtonCell.appendChild(newMeasurementsButton);
+		
+		//var newRemoveButton  = document.createElement("BUTTON");
+		//var newRemoveButtonText = document.createTextNode("Remove");
+		//newRemoveButton.setAttribute("id", "removeButtonId" + i);
+		//newRemoveButton.setAttribute("name", "removeButtonName" + i);
+		//newRemoveButton.setAttribute("className", "form-btn semibold");
+		//newRemoveButton.appendChild(newRemoveButtonText);
+		//newButtonCell.appendChild(newRemoveButton);
 	}
 	
 }
