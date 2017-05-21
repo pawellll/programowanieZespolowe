@@ -122,13 +122,13 @@ function createStreamsTable() {
 		
 		var newButtonCell  = newRow.insertCell(5);
 		
-		var newEditButton  = document.createElement("BUTTON");
-		var newEditButtonText = document.createTextNode("Edit");
-		newEditButton.setAttribute("id", "editButtonId" + i);
-		newEditButton.setAttribute("name", "editButtonName" + i);
-		newEditButton.setAttribute("className", "form-btn semibold");
-		newEditButton.appendChild(newEditButtonText);
-		newButtonCell.appendChild(newEditButton);
+		//var newEditButton  = document.createElement("BUTTON");
+		//var newEditButtonText = document.createTextNode("Edit");
+		//newEditButton.setAttribute("id", "editButtonId" + i);
+		//newEditButton.setAttribute("name", "editButtonName" + i);
+		//newEditButton.setAttribute("className", "form-btn semibold");
+		//newEditButton.appendChild(newEditButtonText);
+		//newButtonCell.appendChild(newEditButton);
 		
 		var newRemoveButton  = document.createElement("BUTTON");
 		var newRemoveButtonText = document.createTextNode("Remove");
