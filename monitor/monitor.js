@@ -119,7 +119,7 @@ app.get('/measurements', function(req, res) {
 	}
 
 	if (req.query["resource"]) {
-		params.resourceName = createRegEx(req.query["resource"]);
+		params.hostName = createRegEx(req.query["resource"]);
 	}
 
 	if (req.query["metric"]) {
@@ -146,7 +146,7 @@ app.get('/measurements', function(req, res) {
 				id: metadatas[i].resourceId,
 				location: config.location + metadatas[i].resourceId,
 				metadata: {
-					resourceName: metadatas[i].resourceName,
+					resourceName: metadatas[i].hostName,
 					metricName: metadatas[i].metricName,
 					unitName: metadatas[i].unitName,
 					description: metadatas[i].description
@@ -262,7 +262,7 @@ app.get('/measurements/:id', function(req, res) {
 		winston.info(metadata);
 
 		result["metadata"] = {};
-		result["metadata"]["resourceName"] = metadata.resourceId;
+		result["metadata"]["resourceName"] = metadata.hostName;
 		result["metadata"]["metricName"] = metadata.metricName;
 		result["metadata"]["unitName"] = metadata.unit;
 		result["metadata"]["description"] = metadata.description;
