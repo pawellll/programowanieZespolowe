@@ -10,6 +10,7 @@ var measurementsData;
 var hostsData;
 
 var resourceIdGlobal = null;
+var hostIdGlobal = '';
 
 function getStreamsFromMonitor() {
 	
@@ -44,26 +45,51 @@ function getStreamsFromMonitor() {
 	
 }
 
-function getMeasurementsFromMonitor() {
+function getStreamsFromMonitorByHostId() {
 	
-	var measurementIdValue = document.getElementById('measurementId').value;
-	var concatenatedUrl = getMeasurementsUrl + "/" + measurementIdValue;
-	
-	var limitIdValue = document.getElementById('limitId').value;
-	if(limitIdValue) {
-		concatenatedUrl += "?limit=" + limitIdValue;
+	var concatenatedUrl = getMeasurementsUrl;
+	hostIdGlobal = localStorage.getItem("hostGlobalIdStorage");
+	if(hostIdGlobal) {
+		console.log(hostIdGlobal.length);
+		concatenatedUrl += "?resource=" + hostIdGlobal;
 	}
-	
 	console.log(concatenatedUrl);
-	
 	$.ajax({
         url: concatenatedUrl,
         type: 'GET'
     }).then(function(data) {
-		measurementsData = data;
-		console.log(measurementsData);
-		createSimpleMeasurementsTable();
+		streamsData = data;
+		localStorage.setItem("hostGlobalIdStorage", '');
+		hostIdGlobal = '';
+    	createStreamsTable();
     });
+	
+}
+
+function getMeasurementsFromMonitor() {
+	
+	var concatenatedUrl = getMeasurementsUrl;
+	resourceIdGlobal = localStorage.getItem("resourceGlobalIdStorage");
+	console.log(resourceIdGlobal);
+	if(resourceIdGlobal) {
+		concatenatedUrl += "/" + resourceIdGlobal;
+	
+		var limitIdValue = document.getElementById('limitId').value;
+		if(limitIdValue) {
+			concatenatedUrl += "?limit=" + limitIdValue;
+		}
+		
+		console.log(concatenatedUrl);
+		
+		$.ajax({
+			url: concatenatedUrl,
+			type: 'GET'
+		}).then(function(data) {
+			measurementsData = data;
+			console.log(measurementsData);
+			createSimpleMeasurementsTable();
+		});
+	}
 	
 }
 
@@ -165,16 +191,10 @@ function createStreamsTable() {
 			console.log(resourceIdGlobal);
 			
 			window.location.href = address + "/pages/simple.html";
+			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/simple.html";
+			
 		}
 		newButtonCell.appendChild(newMeasurementsButton);
-		
-		//var newRemoveButton  = document.createElement("BUTTON");
-		//var newRemoveButtonText = document.createTextNode("Remove");
-		//newRemoveButton.setAttribute("id", "removeButtonId" + i);
-		//newRemoveButton.setAttribute("name", "removeButtonName" + i);
-		//newRemoveButton.setAttribute("className", "form-btn semibold");
-		//newRemoveButton.appendChild(newRemoveButtonText);
-		//newButtonCell.appendChild(newRemoveButton);
 	}
 	
 }
@@ -219,6 +239,26 @@ function createHostsTable() {
 		var newHostNameCell  = newRow.insertCell(0);
 		var newHostNameText  = document.createTextNode(hostsData.hosts[i].hostName);
 		newHostNameCell.appendChild(newHostNameText);
+		
+		var newButtonCell  = newRow.insertCell(1);
+		
+		var newResourcesButton  = document.createElement("BUTTON");
+		var newResourcesButtonText = document.createTextNode("Go to resources");
+		newResourcesButton.setAttribute("id", hostsData.hosts[i].hostName);
+		newResourcesButton.setAttribute("name", "editButtonName" + i);
+		newResourcesButton.setAttribute("className", "form-btn semibold");
+		newResourcesButton.appendChild(newResourcesButtonText);
+		
+		newResourcesButton.onclick = function() {
+			hostIdGlobal = this.getAttribute("id");
+			localStorage.setItem("hostGlobalIdStorage", hostIdGlobal);
+			console.log(hostIdGlobal);
+			
+			window.location.href = address + "/pages/resources.html";
+			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/resources.html";
+			
+		}
+		newButtonCell.appendChild(newResourcesButton);
 		
 	}
 	
