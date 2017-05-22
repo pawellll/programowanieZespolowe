@@ -475,8 +475,7 @@ function isInt(value) {
 }
 
 function createRegEx(base) {
-	// return { $regex: base + "*/" };
-	return new RegExp(base + '*');
+	return { $regex: '.*' + base + '.*' };
 }
 
 Array.prototype.contains = function(v) {
