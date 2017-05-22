@@ -38,7 +38,7 @@
 
 </head>
 
-<body onload="getStreamsFromMonitor();">
+<body onload="getStreamsFromMonitorByHostId();">
 
     <div id="wrapper">
 
@@ -156,7 +156,7 @@
 							<input type="text" name="filterDescriptionName" id="filterDescriptionId" class="form" placeholder="Description" />
 							<input type="text" name="filterUnitName" id="filterUnitId" class="form" placeholder="Unit" />
 							
-							<button type="submit" id="filterResourcesButtonId" name="filterResourcesButtonName" class="form-btn semibold">Filter resources</button> 
+							<button type="submit" id="filterResourcesButtonId" name="filterResourcesButtonName" class="form-btn semibold" onclick="getStreamsFromMonitor();">Filter resources</button> 
 						</div>
 						<!-- Clear -->
 						<div class="clear"></div>
