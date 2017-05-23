@@ -11,6 +11,7 @@ var hostsData;
 
 var resourceIdGlobal = null;
 var hostIdGlobal = '';
+var resourceForGraphIdGlobal = '';
 
 function getStreamsFromMonitor() {
 	
@@ -195,6 +196,24 @@ function createStreamsTable() {
 			
 		}
 		newButtonCell.appendChild(newMeasurementsButton);
+		
+		var newGraphsButton  = document.createElement("BUTTON");
+		var newMeasurementsButtonText = document.createTextNode("Go to graphs");
+		newGraphsButton.setAttribute("id", streamsData.streams[i].id);
+		newGraphsButton.setAttribute("name", "editButtonName" + i);
+		newGraphsButton.setAttribute("className", "form-btn semibold");
+		newGraphsButton.appendChild(newMeasurementsButtonText);
+		
+		newGraphsButton.onclick = function() {
+			resourceForGraphIdGlobal = this.getAttribute("id");
+			localStorage.setItem("resourceForGraphGlobalIdStorage", resourceForGraphIdGlobal);
+			console.log(resourceForGraphIdGlobal);
+			
+			window.location.href = address + "/pages/graphs.html";
+			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/graphs.html";
+			
+		}
+		newButtonCell.appendChild(newGraphsButton);
 	}
 	
 }
