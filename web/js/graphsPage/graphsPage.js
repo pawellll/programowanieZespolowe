@@ -42,7 +42,7 @@ function getMeasurementsFromMonitor(measurementIdValue, limitIdValue) {
         type: 'GET'
     }).then(function(data) {
 		measurementsData = data;
-		createMeasurementsGraph(measurementIdValue);
+		createMeasurementsGraph(measurementIdValue); 
     }).fail(function(){
 		alert("Server connection error");
 	});
@@ -55,4 +55,31 @@ function selectMeasurementClick(){
 	if(measurementIdValue == "") return;
 	
 	getMeasurementsFromMonitor(measurementIdValue, limitIdValue);	
+}
+
+function getMeasurementsFromMonitorByResourceId() {
+	measurementIdValue = localStorage.getItem("resourceForGraphGlobalIdStorage");
+	console.log("local storage value: " + measurementIdValue);
+	
+	if(measurementIdValue) {
+		var concatenatedUrl
+		var currentMonitorObject = getCurrentMonitorObject();
+		
+		if(currentMonitorObject == null ){
+			concatenatedUrl = getMeasurementsDefaultUrl + "/" + measurementIdValue;	
+		}
+		else{
+			concatenatedUrl = 'http://' + currentMonitorObject.ip + "/measurements/" + measurementIdValue;
+		}
+		
+		return $.ajax({
+			url: concatenatedUrl,
+			type: 'GET'
+		}).then(function(data) {
+			measurementsData = data;
+			createMeasurementsGraph(measurementIdValue);
+		}).fail(function(){
+			alert("Server connection error");
+		});
+	}
 }
