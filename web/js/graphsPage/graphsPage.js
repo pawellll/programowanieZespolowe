@@ -2,16 +2,25 @@
 var graphCanvasId = "measurementsGraph";
 var measurementsData = null;
 var getMeasurementsDefaultUrl = 'http://89.79.119.210:1331/measurements';
+var interval = null;
+var measurementGraph = null;
+var refreshInterval = 5000; ///5s interval
 
 function createMeasurementsGraph(measurementIdValue) {	
-	var measurementGraph = new chartPlotter(graphCanvasId);
+	if(measurementGraph != null){
+		measurementGraph.chartInstance.destroy();
+	}
+	var parentElement = $("#" + graphCanvasId).parent();
+	$("#" + graphCanvasId).remove();
+	parentElement.append('<canvas id="measurementsGraph" data-title="Measurements" data-x-label="Timestamp" data-y-label="Value"></canvas>');
+	measurementGraph = new chartPlotter(graphCanvasId);
 	
 	var data = [];
 	var labels = [];
 	
-	for(var i = 0; i < measurementsData.measurements.length; i++){		
+	for(var i = measurementsData.measurements.length - 1; i >= 0; i--){		
 		data.push(measurementsData.measurements[i].value);
-		labels.push(i);
+		labels.push(measurementsData.measurements[i].timestamp);
 	}	
 	
 	measurementGraph.addDataset(data, measurementsData.metadata.description);
@@ -49,12 +58,19 @@ function getMeasurementsFromMonitor(measurementIdValue, limitIdValue) {
 }
 
 function selectMeasurementClick(){
+	if(interval != null){
+		interval();
+		interval = null;
+	}
+	
 	var measurementIdValue = document.getElementById('measurementId').value;
 	var limitIdValue = document.getElementById('limitId').value;
 	
 	if(measurementIdValue == "") return;
 	
-	getMeasurementsFromMonitor(measurementIdValue, limitIdValue);	
+	interval = setInterval(function(){
+		getMeasurementsFromMonitor(measurementIdValue, limitIdValue);
+	}, refreshInterval);		
 }
 
 function getMeasurementsFromMonitorByResourceId() {
@@ -83,3 +99,8 @@ function getMeasurementsFromMonitorByResourceId() {
 		});
 	}
 }
+
+getMeasurementsFromMonitorByResourceId();
+interval = setInterval(function(){
+	getMeasurementsFromMonitorByResourceId();
+}, refreshInterval);
