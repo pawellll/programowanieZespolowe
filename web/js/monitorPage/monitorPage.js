@@ -26,7 +26,7 @@ function refreshMonitorList(){
 	var currentMonitorName = getCurrentMonitor()
 	
 	$.each(monitorNames, function(index, name) {
-		var displayName = name == currentMonitorName ? (name + "(current)") : name
+		var displayName = name == currentMonitorName ? (name + " (current)") : name
 		var html = "<tr class='odd gradeX'>" +
 						"<td>"+displayName +"</td>" +
 						"<td>"+ monitors[name].ip + "</td>" +
