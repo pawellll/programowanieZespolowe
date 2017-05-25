@@ -30,6 +30,7 @@ function chartPlotter(canvasId, type){
 		var title = this.element.data("title");
 		
 		this.options = {
+			animation: false,
 			responsive: true,
 			title:{
 				display:true,
@@ -49,6 +50,10 @@ function chartPlotter(canvasId, type){
 					scaleLabel: {
 						display: true,
 						labelString: xlabel
+					},
+					ticks: {
+						autoSkip: true,
+						maxTicksLimit: 20
 					}
 				}],
 				yAxes: [{

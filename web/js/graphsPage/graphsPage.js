@@ -5,6 +5,17 @@ var getMeasurementsDefaultUrl = 'http://89.79.119.210:1331/measurements';
 var interval = null;
 var measurementGraph = null;
 var refreshInterval = 5000; ///5s interval
+var limitValue = null;
+var defaultLimit = 5 * 60; /// 5 minutes
+
+function formatTimestamp(timestamp){
+	var date = new Date(timestamp);
+	var hours = date.getHours();
+	var minutes = "0" + date.getMinutes();
+	var seconds = "0" + date.getSeconds();
+
+	return formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);	
+}
 
 function createMeasurementsGraph(measurementIdValue) {	
 	if(measurementGraph != null){
@@ -20,7 +31,7 @@ function createMeasurementsGraph(measurementIdValue) {
 	
 	for(var i = measurementsData.measurements.length - 1; i >= 0; i--){		
 		data.push(measurementsData.measurements[i].value);
-		labels.push(measurementsData.measurements[i].timestamp);
+		labels.push(formatTimestamp(measurementsData.measurements[i].timestamp));
 	}	
 	
 	measurementGraph.addDataset(data, measurementsData.metadata.description);
@@ -31,49 +42,22 @@ function createMeasurementsGraph(measurementIdValue) {
 	measurementGraph.plot();
 }
 
-function getMeasurementsFromMonitor(measurementIdValue, limitIdValue) {	
-	var concatenatedUrl
-	var currentMonitorObject = getCurrentMonitorObject();
-	
-	if(currentMonitorObject == null ){
-		concatenatedUrl = getMeasurementsDefaultUrl + "/" + measurementIdValue;	
-	}
-	else{
-		concatenatedUrl = 'http://' + currentMonitorObject.ip + "/measurements/" + measurementIdValue;
-	}
-	
-	if(limitIdValue) {
-		concatenatedUrl += "?limit=" + limitIdValue;
-	}
-	
-	return $.ajax({
-        url: concatenatedUrl,
-        type: 'GET'
-    }).then(function(data) {
-		measurementsData = data;
-		createMeasurementsGraph(measurementIdValue); 
-    }).fail(function(){
-		alert("Server connection error");
-	});
-}
-
 function selectMeasurementClick(){
 	if(interval != null){
-		interval();
+		clearInterval(interval);
 		interval = null;
 	}
 	
-	var measurementIdValue = document.getElementById('measurementId').value;
-	var limitIdValue = document.getElementById('limitId').value;
+	var limitValue = document.getElementById('limitId').value;
+	if(limitValue == "") return;
 	
-	if(measurementIdValue == "") return;
-	
+	getMeasurementsFromMonitorByResourceId(limitValue);
 	interval = setInterval(function(){
-		getMeasurementsFromMonitor(measurementIdValue, limitIdValue);
+		getMeasurementsFromMonitorByResourceId(limitValue);
 	}, refreshInterval);		
 }
 
-function getMeasurementsFromMonitorByResourceId() {
+function getMeasurementsFromMonitorByResourceId(limitValue) {
 	measurementIdValue = localStorage.getItem("resourceForGraphGlobalIdStorage");
 	console.log("local storage value: " + measurementIdValue);
 	
@@ -88,6 +72,10 @@ function getMeasurementsFromMonitorByResourceId() {
 			concatenatedUrl = 'http://' + currentMonitorObject.ip + "/measurements/" + measurementIdValue;
 		}
 		
+		if(limitValue != null) {
+			concatenatedUrl += "?limit=" + limitValue;
+		}
+		
 		return $.ajax({
 			url: concatenatedUrl,
 			type: 'GET'
@@ -100,7 +88,7 @@ function getMeasurementsFromMonitorByResourceId() {
 	}
 }
 
-getMeasurementsFromMonitorByResourceId();
+getMeasurementsFromMonitorByResourceId(defaultLimit);
 interval = setInterval(function(){
-	getMeasurementsFromMonitorByResourceId();
+	getMeasurementsFromMonitorByResourceId(defaultLimit);
 }, refreshInterval);
