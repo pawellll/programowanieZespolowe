@@ -13,7 +13,7 @@ def main():
 			for label, group in res.items():
 				m = mConcat.setdefault(label, [])
 				m += group
-		printTop(mConcat, 5)
+		printTop(mConcat, 10)
 		time.sleep(5)
 
 def getMeasurementsFromMonitor(address):
@@ -38,7 +38,7 @@ def printTop(measurements, num):
 
 
 def getTopFromGroup(group, num):
-	top = [];
+	top = []
 	for location in group:
 		measurement = requests.get(location).json()
 		mIt = 0
