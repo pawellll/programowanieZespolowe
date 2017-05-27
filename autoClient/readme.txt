@@ -1,8 +1,9 @@
-Wymagane paczki do pythona (2.7)
-https://pypi.python.org/pypi/requests/2.7.0
+Dzia≈Ça na Pythonie 2.x i 3.x 
+Wymagane biblioteki
+	- requests
 
-Konfiguracja monitorÛw (poki co nie ma nigdzie zapisanych monitorow, wiec wrzucam do pliku konifiguracyjnego)
+Konfiguracja monitor√≥w (poki co nie ma nigdzie zapisanych monitorow, wiec wrzucam do pliku konifiguracyjnego)
 
 plik monitors.cfg
 
-w kaødej linii dodaÊ: nazwa;ip
+w ka≈ºdej linii dodana nazwa;ip
