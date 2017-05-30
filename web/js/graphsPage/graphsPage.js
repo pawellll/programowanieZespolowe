@@ -65,12 +65,13 @@ function getMeasurementsFromMonitorByResourceId(limitValue) {
 		var concatenatedUrl
 		var currentMonitorObject = getCurrentMonitorObject();
 		
-		if(currentMonitorObject == null ){
-			concatenatedUrl = getMeasurementsDefaultUrl + "/" + measurementIdValue;	
+		if(currentMonitorObject == null) {
+			alert("Warning: no monitor choosed"); 
+			clearInterval(interval);
+			return;
 		}
-		else{
-			concatenatedUrl = 'http://' + currentMonitorObject.ip + "/measurements/" + measurementIdValue;
-		}
+		
+		concatenatedUrl = 'http://' + currentMonitorObject.ip + "/measurements/" + measurementIdValue;
 		
 		if(limitValue != null) {
 			concatenatedUrl += "?limit=" + limitValue;
