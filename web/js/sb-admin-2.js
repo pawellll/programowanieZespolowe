@@ -1,7 +1,9 @@
+var currentMonitor = getCurrentMonitorObject();
+
 //var getMeasurementsUrl = 'http://127.0.0.1:8888/measurements';
-var getMeasurementsUrl = 'http://89.79.119.210:1331/measurements';
+var getMeasurementsUrl = 'http://' + currentMonitor.ip + '/measurements';
 //var getHostsUrl = 'http://127.0.0.1:8888/hosts';
-var getHostsUrl = 'http://89.79.119.210:1331/hosts';
+var getHostsUrl = 'http://' + currentMonitor.ip + '/hosts';
 //var address = 'http://127.0.0.1:8888';
 var address = 'http://89.79.119.210:1330';
 
