@@ -5,7 +5,7 @@ var getMeasurementsUrl = 'http://' + currentMonitor.ip + '/measurements';
 //var getHostsUrl = 'http://127.0.0.1:8888/hosts';
 var getHostsUrl = 'http://' + currentMonitor.ip + '/hosts';
 //var address = 'http://127.0.0.1:8888';
-var address = 'http://89.79.119.210:1330';
+var address = '';///'http://89.79.119.210:1330';
 
 var streamsData;
 var measurementsData;
@@ -193,7 +193,7 @@ function createStreamsTable() {
 			localStorage.setItem("resourceGlobalIdStorage", resourceIdGlobal);
 			console.log(resourceIdGlobal);
 			
-			window.location.href = address + "/pages/simple.html";
+			window.location.href = address + "simple.html";
 			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/simple.html";
 			
 		}
@@ -211,7 +211,7 @@ function createStreamsTable() {
 			localStorage.setItem("resourceForGraphGlobalIdStorage", resourceForGraphIdGlobal);
 			console.log(resourceForGraphIdGlobal);
 			
-			window.location.href = address + "/pages/graphs.html";
+			window.location.href = address + "graphs.html";
 			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/graphs.html";
 			
 		}
@@ -275,7 +275,7 @@ function createHostsTable() {
 			localStorage.setItem("hostGlobalIdStorage", hostIdGlobal);
 			console.log(hostIdGlobal);
 			
-			window.location.href = address + "/pages/resources.html";
+			window.location.href = address + "resources.html";
 			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/resources.html";
 			
 		}
