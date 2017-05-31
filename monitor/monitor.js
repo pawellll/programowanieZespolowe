@@ -405,8 +405,8 @@ app.delete('/measurements/:id', function (req, res) {
 	res.header('Access-Control-Allow-Origin', '*');
 
 	if (!id) {
-		winston.info('measurement id not found');
-		res.status(404).send();
+		winston.info('id - request parameter is not given');
+		res.status(400).send();
 		return;
 	}
 
@@ -430,6 +430,7 @@ app.delete('/measurements/:id', function (req, res) {
 
 			if (err) {
 				winston.error("delete metadata error:" + err);
+				res.status(500).send();			
 			} else {
 				winston.info("delete metadata success. Stopping the job and deleting measurements");
 				
