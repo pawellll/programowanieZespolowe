@@ -14,6 +14,7 @@
     "express": "latest",
     "mongoose": "latest",
     "body-parser": "latest",
-    "winston": "latest"
+    "winston": "latest",
+	"basic-auth": "latest"
   }
 }
