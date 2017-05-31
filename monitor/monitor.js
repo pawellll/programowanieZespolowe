@@ -1,9 +1,3 @@
-var config = require('./config');
-
-// Database connection
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://' + config.dbAddress + '/monitordb');
-
 // Logging
 var winston = require('winston');
 winston.add(winston.transports.File, {
@@ -12,7 +6,16 @@ winston.add(winston.transports.File, {
     humanReadableUnhandledException: true,
     json: false
   });
+
 winston.exitOnError = false;
+
+winston.info("starting monitor");
+
+var config = require('./config');
+
+// Database connection
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://' + config.dbAddress + '/monitordb');
 
 // Uncaught exceptions handling
 process.on('uncaughtException', function(err) {
@@ -96,6 +99,7 @@ var express = require('express');
 var app = express();
 var bodyParser = require("body-parser");
 var auth = require('basic-auth');
+var request = require('request');
 
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -533,5 +537,17 @@ Array.prototype.unique = function() {
 function isAuthorized(login, password) {
 	winston.info("authorize");
 	
+	// request.post(
+ //    	'http://www.yoursite.com/formpage',
+ //    	{ json: { key: 'value' } },
+ //    	function (error, response, body) {
+	//         if (!error && response.statusCode == 200) {
+ //            	console.log(body)
+ //        	}
+ //    	}
+	// );
+
+	// return false;
+
 	return true;
 }
