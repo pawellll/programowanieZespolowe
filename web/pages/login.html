@@ -29,6 +29,54 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script type="javascript">
+        function login(){
+            var url = ""; //TODO
+            var authData = {};
+            authData.username = document.getElementById("username");
+            authData.password = document.getElementById("password");
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType:'application/json',
+                data: JSON.stringify(authData),
+                dataType:'json',
+                success: function(data){
+                    //On ajax success do this
+//                    alert(data);
+                    handleLoginResult(data);
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    //On error do this
+                    if (xhr.status == 200) {
+
+                        alert(ajaxOptions);
+                    }
+                    else {
+                        alert(xhr.status);
+                        alert(thrownError);
+                    }
+                }
+            });
+        }
+
+        function handleLoginResult(data)
+        {
+            alert(data);
+            var success = data["success"];
+            if(success === true)
+            {
+                //TODO
+                token = data["token"];
+                username = data["username"];
+            }
+            else
+            {
+                //TODO
+            }
+        }
+    </script>
 
 </head>
 
@@ -45,10 +93,10 @@
                         <form role="form">
                             <fieldset>
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="E-mail" name="email" type="email" autofocus>
+                                    <input id="username" class="form-control" placeholder="Username" name="username" type="text" autofocus>
                                 </div>
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="Hasło" name="password" type="password" value="">
+                                    <input id="password" class="form-control" placeholder="Hasło" name="password" type="password" value="">
                                 </div>
                                 <div class="checkbox">
                                     <label>
@@ -56,7 +104,9 @@
                                     </label>
                                 </div>
                                 <!-- Change this to a button or input when using this as a form -->
-                                <a href="index.html" class="btn btn-lg btn-success btn-block">Zaloguj</a>
+                                <button onclick="login()" class="btn btn-lg btn-success btn-block">Zaloguj</button>
+                                <button onclick="login()" class="btn btn-lg btn-default btn-block">Nowy użytkownik</button>
+
                             </fieldset>
                         </form>
                     </div>
