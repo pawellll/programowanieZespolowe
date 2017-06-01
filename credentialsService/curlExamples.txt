@@ -1,5 +1,23 @@
-curl -X GET -u username:password http://localhost:1335/authenticate
+curl -X GET -u nonExistentUser:test http://localhost:1335/authenticate
 Access denied
+
 
 curl -X GET -u test:test http://localhost:1335/authenticate
 Access granted
+
+
+curl -X GET -u nonExistentUser:test http://localhost:1335/users
+Access denied
+
+
+curl -X GET -u test:test http://localhost:1335/users
+{
+  "users": []
+}
+
+/createUser json example:
+{
+	"username": "admin",
+	"password": "admin"
+}
+
