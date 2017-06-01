@@ -13,6 +13,8 @@ winston.info("starting monitor");
 
 var config = require('./config');
 
+winston.info("connecting database");
+
 // Database connection
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://' + config.dbAddress + '/monitordb');
@@ -22,6 +24,8 @@ process.on('uncaughtException', function(err) {
   winston.error('Caught exception: ' + err);
   process.exit();
 });
+
+winston.info("creating schemas");
 
 var sensorMetadataSchema = new mongoose.Schema({
 	resourceId: String,
@@ -53,6 +57,8 @@ SensorMetadata.find({isComposite: true}).remove().exec();
 var net = require('net');
 
 // reading measurments from sensors and saving to database
+
+winston.info("start listening for measurements");
 
 for (var i = 0; i < config.sensorsCount; ++i) {
 	net.createServer(function(socket) {
@@ -313,7 +319,7 @@ app.post('/measurements', function(req, res) {
 	var user = auth(req);
 	
 	if (!isAuthorized(user.name, user.pass)) {
-		window.info('user not authorized');
+		winston.info('user not authorized');
 		res.status(401).send();
 		return;
 	}
@@ -536,19 +542,36 @@ Array.prototype.unique = function() {
 }
 
 function isAuthorized(login, password) {
-	winston.info("authorize");
+	winston.info("isAuthorized");
 	
-	// request.post(
- //    	'http://www.yoursite.com/formpage',
- //    	{ json: { key: 'value' } },
- //    	function (error, response, body) {
-	//         if (!error && response.statusCode == 200) {
- //            	console.log(body)
- //        	}
- //    	}
-	// );
+	var url = config.credentialService.address + ':' + config.credentialService.port + '/' + config.credentialService.method;
+	var options = {
+  		url: url,
+  		auth: {
+    		user: login,
+    		password: password
+  		}
+	}
 
-	// return false;
+	winston.info("Authorizing with address:" + url + " for user:" + login);
 
-	return true;
+	request.get(options, function (err, res, body) {
+
+	  	if (err) {
+	  		winston.error("Error while authorizing:");
+	    	winston.error(err);
+	    	return false;
+	  	}
+
+	  	winston.info("Status:" + res.statusCode);
+
+		if (res.statusCode != 200) {
+			winston.info("User:" + login + " not authorized");
+			return false;
+		} 
+
+		winston.info("User " + login + " authorized");
+
+		return true;
+	})
 }
