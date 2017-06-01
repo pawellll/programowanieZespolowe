@@ -546,10 +546,10 @@ function isAuthorized(login, password) {
 	
 	var url = config.credentialService.address + ':' + config.credentialService.port + '/' + config.credentialService.method;
 	var options = {
-  		url: url,
-  		auth: {
-    		user: login,
-    		password: password
+		url: url,
+		auth: {
+			user: login,
+			password: password
   		}
 	}
 
@@ -558,9 +558,9 @@ function isAuthorized(login, password) {
 	request.get(options, function (err, res, body) {
 
 	  	if (err) {
-	  		winston.error("Error while authorizing:");
-	    	winston.error(err);
-	    	return false;
+			winston.error("Error while authorizing:");
+			winston.error(err);
+			return false;
 	  	}
 
 	  	winston.info("Status:" + res.statusCode);
