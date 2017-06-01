@@ -1,2 +1,2 @@
-curl -i -X POST -H 'Content-Type: application/json' -d '{"id": "Resource_36", "name": "Danielek", "period": "21", "interval":"5"}' http://localhost:8888/measurements
-curl -X "DELETE" http://localhost:8888/measurements
+curl -i -X POST -H 'Content-Type: application/json' -d '{"id": "b9b98dcb-cf3a-43a0-a02b-4d05a646c4f6", "name": "Pawelek", "period": "21", "interval":"5"}' -u username:password http://localhost:1331/measurements
+curl -X DELETE -u username:password http://localhost:8888/measurements/Composite_92823

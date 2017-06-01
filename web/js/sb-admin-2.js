@@ -1,9 +1,13 @@
-//var getMeasurementsUrl = 'http://127.0.0.1:8888/measurements';
-var getMeasurementsUrl = 'http://89.79.119.210:1331/measurements';
-//var getHostsUrl = 'http://127.0.0.1:8888/hosts';
-var getHostsUrl = 'http://89.79.119.210:1331/hosts';
-//var address = 'http://127.0.0.1:8888';
-var address = 'http://89.79.119.210:1330';
+var currentMonitor = getCurrentMonitorObject();
+
+if(currentMonitor != null){
+	//var getMeasurementsUrl = 'http://127.0.0.1:8888/measurements';
+	window.getMeasurementsUrl = 'http://' + currentMonitor.ip + '/measurements';
+	//var getHostsUrl = 'http://127.0.0.1:8888/hosts';
+	window.getHostsUrl = 'http://' + currentMonitor.ip + '/hosts';
+	//var address = 'http://127.0.0.1:8888';
+	window.address = '';///'http://89.79.119.210:1330';
+}
 
 var streamsData;
 var measurementsData;
@@ -14,6 +18,10 @@ var hostIdGlobal = '';
 var resourceForGraphIdGlobal = '';
 
 function getStreamsFromMonitor() {
+	if(currentMonitor == null) {
+		alert("Warning: no monitor choosed"); 
+		return;
+	}
 	
 	var filterNameId = document.getElementById('filterNameId').value;
 	var filterMetricId = document.getElementById('filterMetricId').value;
@@ -47,6 +55,10 @@ function getStreamsFromMonitor() {
 }
 
 function getStreamsFromMonitorByHostId() {
+	if(currentMonitor == null) {
+		alert("Warning: no monitor choosed"); 
+		return;
+	}
 	
 	var concatenatedUrl = getMeasurementsUrl;
 	hostIdGlobal = localStorage.getItem("hostGlobalIdStorage");
@@ -68,6 +80,10 @@ function getStreamsFromMonitorByHostId() {
 }
 
 function getMeasurementsFromMonitor() {
+	if(currentMonitor == null) {
+		alert("Warning: no monitor choosed"); 
+		return;
+	}
 	
 	var concatenatedUrl = getMeasurementsUrl;
 	resourceIdGlobal = localStorage.getItem("resourceGlobalIdStorage");
@@ -95,6 +111,10 @@ function getMeasurementsFromMonitor() {
 }
 
 function getMeasurementsFromMonitorByResourceId() {
+	if(currentMonitor == null) {
+		alert("Warning: no monitor choosed"); 
+		return;
+	}
 	
 	var concatenatedUrl = getMeasurementsUrl;
 	resourceIdGlobal = localStorage.getItem("resourceGlobalIdStorage");
@@ -123,6 +143,10 @@ function getMeasurementsFromMonitorByResourceId() {
 }
 
 function getHostsFromMonitor() {
+	if(currentMonitor == null) {
+		alert("Warning: no monitor choosed"); 
+		return;
+	}
 	
 	var concatenatedUrl = getHostsUrl;
 	
@@ -145,6 +169,10 @@ function getHostsFromMonitor() {
 }
  
 function createStreamsTable() {
+	if(currentMonitor == null) {
+		alert("Warning: no monitor choosed"); 
+		return;
+	}
 	
 	var tableRef = document.getElementById('resourcesTableId').getElementsByTagName('tbody')[0];
 	while(tableRef.rows.length > 0) {
@@ -191,7 +219,7 @@ function createStreamsTable() {
 			localStorage.setItem("resourceGlobalIdStorage", resourceIdGlobal);
 			console.log(resourceIdGlobal);
 			
-			window.location.href = address + "/pages/simple.html";
+			window.location.href = address + "simple.html";
 			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/simple.html";
 			
 		}
@@ -209,7 +237,7 @@ function createStreamsTable() {
 			localStorage.setItem("resourceForGraphGlobalIdStorage", resourceForGraphIdGlobal);
 			console.log(resourceForGraphIdGlobal);
 			
-			window.location.href = address + "/pages/graphs.html";
+			window.location.href = address + "graphs.html";
 			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/graphs.html";
 			
 		}
@@ -219,6 +247,11 @@ function createStreamsTable() {
 }
 
 function createSimpleMeasurementsTable() {
+	if(currentMonitor == null) {
+		alert("Warning: no monitor choosed"); 
+		return;
+	}
+	
 	document.getElementById('measurementLabelId').innerHTML = "Last measurements for resource name: " + measurementsData.metadata.resourceName + " , metric name: " + measurementsData.metadata.metricName;
 	
 	var tableRef = document.getElementById('measurementsTableId').getElementsByTagName('tbody')[0];
@@ -244,6 +277,10 @@ function createSimpleMeasurementsTable() {
 }
 
 function createHostsTable() {
+	if(currentMonitor == null) {
+		alert("Warning: no monitor choosed"); 
+		return;
+	}
 	
 	var tableRef = document.getElementById('hostsTableId').getElementsByTagName('tbody')[0];
 	while(tableRef.rows.length > 0) {
@@ -273,7 +310,7 @@ function createHostsTable() {
 			localStorage.setItem("hostGlobalIdStorage", hostIdGlobal);
 			console.log(hostIdGlobal);
 			
-			window.location.href = address + "/pages/resources.html";
+			window.location.href = address + "resources.html";
 			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/resources.html";
 			
 		}
