@@ -3,7 +3,7 @@ Access denied
 
 
 
-curl -X GET -u test:test http://localhost:1335/authenticate
+curl -X GET -u admin:admin http://localhost:1335/authenticate
 Access granted
 
 
@@ -13,27 +13,17 @@ Access denied
 
 
 
-curl -X GET -u test:test -H "Accept: application/json" "http://localhost:1335/users" 
+curl -X GET -u admin:admin -H "Accept: application/json" "http://localhost:1335/users"
 {
   "users": [
     {
-      "username": "test"
+      "username": "admin"
     }
   ]
 }
 
 
-curl -X DELETE -u test:test -H "Accept: application/json" "http://localhost:1335/users"
-
-
-
-curl -X GET -u test:test -H "Accept: application/json" "http://localhost:1335/users" 
-{
-  "users": []
-}
-
-
-curl -i -X POST -u test:test -H "Content-Type:application/json" -d "{\"username\":\"admin\", \"password\":\"admin\"}" http://127.0.0.1:1335/users"
+curl -i -X POST -H "Content-Type:application/json" -d "{\"username\":\"test\", \"password\":\"test\"}" http://127.0.0.1:1335/users"
 HTTP/1.1 201 Created
 X-Powered-By: Express
 Access-Control-Allow-Origin: *
@@ -42,28 +32,47 @@ Connection: keep-alive
 Content-Length: 0
 
 
+curl -X GET -u admin:admin -H "Accept: application/json" "http://localhost:1335/users"
+{
+  "users": [
+    {
+      "username": "admin"
+    },
+    {
+      "username": "test"
+    }
+  ]
+}
 
-curl -i -X POST -u test:test -H "Content-Type:application/json" -d "{\"username\":\"admin\", \"password\":\"admin\"}" http://127.0.0.1:1335/users"
-HTTP/1.1 400 Bad Request
+
+
+curl -X DELETE -u test:test -H "Accept: application/json" "http://localhost:1335/users"
+
+
+
+curl -X DELETE -u test:test -H "Accept: application/json" "http://localhost:1335/users"
+Access denied
+
+
+
+curl -X GET -u admin:admin -H "Accept: application/json" "http://localhost:1335/users"
+{
+  "users": [
+    {
+      "username": "admin"
+    }
+  ]
+}
+
+
+
+curl -i -X POST -H "Content-Type:application/json" -d "{\"username\":\"admin\", \"password\":\"admin\"}" http://127.0.0.1:1335/users"
+HTTP/1.1 409 Conflict
 X-Powered-By: Express
 Access-Control-Allow-Origin: *
-Date: Thu, 01 Jun 2017 23:29:41 GMT
+Date: Fri, 02 Jun 2017 12:07:43 GMT
 Connection: keep-alive
 Content-Length: 0
-
-
-
-curl -X GET -u test:test -H "Accept: application/json" "http://localhost:1335/users"
-{
-   "users":[
-      {
-         "username":"test"
-      },
-      {
-         "username":"admin"
-      }
-   ]
-}
 
 
 

@@ -20,8 +20,8 @@ var DOESNOT_EXIST = " doesnot exist";
 var EXISTS = " exists";
 var CREATED = " created";
 var ERROR_WHILE_USER_CREATING = "Error while user creating: ";
-var ERROR_WHILE_USER_REMOVING = "Error while users removing: ";
-var ALL_USERS_DELETED = "All users deleted";
+var ERROR_WHILE_USER_REMOVING = "Error while user removing: ";
+var USER_REMOVED = "User removed: ";
 
 // Logging
 var winston = require('winston');
@@ -34,7 +34,7 @@ winston.add(winston.transports.File, {
 
 winston.exitOnError = false;
 
-winston.info();
+winston.info(STARTING_INFO);
 
 var config = require('./config');
 
@@ -82,34 +82,24 @@ credentialsService.get(AUTHENTICATE_ENDPOINT, function(req, res) {
 
 credentialsService.post(USERS_ENDPOINT, function(req, res) {
 	res.header(ACCESS_CONTROL_ALLOW_ORIGIN, ASTERISK);
-	
-	checkCredentials(req, function(authResult){
-		
-		if(authResult){
 			
-			var username = req.body.username;
-			var password = req.body.password;
+	var username = req.body.username;
+	var password = req.body.password;
 			
-			if (username && password) {
-				checkIfUserExists(username, function(result) {
-					var canCreateUser = result == false;
-					if(canCreateUser) {
-						createUser(req.body, res);
-					} else {
-
-						winston.info( CANNOT_CREATE_USER + USER_EXIST);
-						res.status(400).send();
-					}
-				});
+	if (username && password) {
+		checkIfUserExists(username, function(result) {
+			var canCreateUser = result == false;
+			if(canCreateUser) {
+				createUser(req.body, res);
 			} else {
-				winston.info(CANNOT_CREATE_USER + INVAILD_REQUEST_BODY);
-				res.status(400).send();
+				winston.info( CANNOT_CREATE_USER + USER_EXIST);
+				res.status(409).send();
 			}
-		} else {
-			res.status(401);
-			res.end(ACCESS_DENIED);
-		}
-	});
+		});
+	} else {
+		winston.info(CANNOT_CREATE_USER + INVAILD_REQUEST_BODY);
+		res.status(400).send();
+	}
 });
 
 
@@ -145,12 +135,14 @@ credentialsService.delete(USERS_ENDPOINT, function(req, res) {
 	res.header(ACCESS_CONTROL_ALLOW_ORIGIN, ASTERISK);
 	checkCredentials(req, function(authResult){
 		if(authResult){
-			UserModel.remove({}, function(err, removed) {
+			UserModel.remove( {				
+				username : auth(req).name
+			}, function(err, removed) {
 				if (err) {
 					winston.error(ERROR_WHILE_USER_REMOVING + err);
 					res.status(500).send();			
 				} else {
-					winston.info(ALL_USERS_DELETED);
+					winston.info(USER_REMOVED + auth(req).name);
 					res.status(200).send();			
 				}
 			});
@@ -164,27 +156,21 @@ credentialsService.delete(USERS_ENDPOINT, function(req, res) {
 function checkCredentials(req, callback) {
 	var credentials = auth(req);
 	if(credentials) {
-		
 		winston.info(STARTING_AUTHENTICATION + credentials.name);
 		var user = credentials.name;
 		var password = credentials.pass;
-		if(user === 'test' && password === 'test') {
-			winston.info(AUTHENTICATED);
-			callback(complete(true));
-		} else {
-			UserModel.findOne({
-				username : user,
-				password : password
-			}, function(err, metadata) {
-				if (!metadata) {
-					winston.info(INVAILD_CREDENTIALS);
-					callback(complete(false));
-				} else {
-					winston.info(AUTHENTICATED);
-					callback(complete(true));
-				}
-			});	
-		}
+		UserModel.findOne({
+			username : user,
+			password : password
+		}, function(err, metadata) {
+			if (!metadata) {
+				winston.info(INVAILD_CREDENTIALS);
+				callback(complete(false));
+			} else {
+				winston.info(AUTHENTICATED);
+				callback(complete(true));
+			}
+		});	
 	} else {
 		winston.info(LACK_OF_CREDENTIALS);
 		callback(complete(false));
