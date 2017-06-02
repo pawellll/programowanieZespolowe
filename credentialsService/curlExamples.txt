@@ -1,5 +1,70 @@
-curl -X GET -u username:password http://localhost:1335/authenticate
+curl -X GET -u nonExistentUser:test http://localhost:1335/authenticate
 Access denied
+
+
 
 curl -X GET -u test:test http://localhost:1335/authenticate
 Access granted
+
+
+
+curl -X GET -u nonExistentUser:test http://localhost:1335/users
+Access denied
+
+
+
+curl -X GET -u test:test -H "Accept: application/json" "http://localhost:1335/users" 
+{
+  "users": [
+    {
+      "username": "test"
+    }
+  ]
+}
+
+
+curl -X DELETE -u test:test -H "Accept: application/json" "http://localhost:1335/users"
+
+
+
+curl -X GET -u test:test -H "Accept: application/json" "http://localhost:1335/users" 
+{
+  "users": []
+}
+
+
+curl -i -X POST -u test:test -H "Content-Type:application/json" -d "{\"username\":\"admin\", \"password\":\"admin\"}" http://127.0.0.1:1335/users"
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Date: Thu, 01 Jun 2017 23:28:37 GMT
+Connection: keep-alive
+Content-Length: 0
+
+
+
+curl -i -X POST -u test:test -H "Content-Type:application/json" -d "{\"username\":\"admin\", \"password\":\"admin\"}" http://127.0.0.1:1335/users"
+HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+Date: Thu, 01 Jun 2017 23:29:41 GMT
+Connection: keep-alive
+Content-Length: 0
+
+
+
+curl -X GET -u test:test -H "Accept: application/json" "http://localhost:1335/users"
+{
+   "users":[
+      {
+         "username":"test"
+      },
+      {
+         "username":"admin"
+      }
+   ]
+}
+
+
+
+

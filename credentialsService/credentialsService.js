@@ -1,7 +1,32 @@
+//String Variables
+var LOG_FILE_NAME = 'output.log';
+var STARTING_INFO = "CredentialsService started";
+var AUTHENTICATE_ENDPOINT = '/authenticate';
+var USERS_ENDPOINT = '/users';
+var ACCESS_CONTROL_ALLOW_ORIGIN = 'Access-Control-Allow-Origin';
+var ASTERISK = '*';
+var ACCESS_GRANTED = "Access granted";
+var ACCESS_DENIED = "Access denied";
+var CANNOT_CREATE_USER = "Cannot create user: ";
+var USER_EXIST = "User exists in database";
+var INVAILD_REQUEST_BODY = "Invaild request body";
+var ERROR_WHILE_GETTING_USERS = "Error while getting users: ";
+var STARTING_AUTHENTICATION = "Starting authentication for user ";
+var AUTHENTICATED = "Authenticated!";
+var INVAILD_CREDENTIALS = "Invaild credentials";
+var LACK_OF_CREDENTIALS = "Lack of credentials";
+var USER = "User ";
+var DOESNOT_EXIST = " doesnot exist";
+var EXISTS = " exists";
+var CREATED = " created";
+var ERROR_WHILE_USER_CREATING = "Error while user creating: ";
+var ERROR_WHILE_USER_REMOVING = "Error while users removing: ";
+var ALL_USERS_DELETED = "All users deleted";
+
 // Logging
 var winston = require('winston');
 winston.add(winston.transports.File, {
-    filename: 'output.log',
+    filename: LOG_FILE_NAME,
     handleExceptions: true,
     humanReadableUnhandledException: true,
     json: false
@@ -9,7 +34,7 @@ winston.add(winston.transports.File, {
 
 winston.exitOnError = false;
 
-winston.info("starting credentialsService");
+winston.info();
 
 var config = require('./config');
 
@@ -41,30 +66,166 @@ var auth = require('basic-auth');
 credentialsService.use(bodyParser.urlencoded({ extended: false }));
 credentialsService.use(bodyParser.json());
 
-credentialsService.get('/authenticate', function(req, res) {
-	res.header('Access-Control-Allow-Origin', '*');
+credentialsService.get(AUTHENTICATE_ENDPOINT, function(req, res) {
+	res.header(ACCESS_CONTROL_ALLOW_ORIGIN, ASTERISK);
 
-	var credentials = auth(req);
-
-	var params = {};
-
-	var credentials = auth(req)
-	
-	var username = credentials.name;
-	var password = credentials.pass;
-	
-	winston.info("starting authentication for user " + username);
-	winston.info("password: " + password);
-
-	if (!credentials || credentials.name !== 'test' || credentials.pass !== 'test') {
-		res.statusCode = 401
-		res.end('Access denied')
-	} else {
-		res.end('Access granted')
-	}
-	var result = {};
-	res.status(200).json(result);	
-
+	checkCredentials(req, function(authResult){
+		if(authResult){
+			res.status(200);
+			res.end(ACCESS_GRANTED);
+		} else {
+			res.status(401);
+			res.end(ACCESS_DENIED);
+		}
+	});
 });
+
+credentialsService.post(USERS_ENDPOINT, function(req, res) {
+	res.header(ACCESS_CONTROL_ALLOW_ORIGIN, ASTERISK);
+	
+	checkCredentials(req, function(authResult){
+		
+		if(authResult){
+			
+			var username = req.body.username;
+			var password = req.body.password;
+			
+			if (username && password) {
+				checkIfUserExists(username, function(result) {
+					var canCreateUser = result == false;
+					if(canCreateUser) {
+						createUser(req.body, res);
+					} else {
+
+						winston.info( CANNOT_CREATE_USER + USER_EXIST);
+						res.status(400).send();
+					}
+				});
+			} else {
+				winston.info(CANNOT_CREATE_USER + INVAILD_REQUEST_BODY);
+				res.status(400).send();
+			}
+		} else {
+			res.status(401);
+			res.end(ACCESS_DENIED);
+		}
+	});
+});
+
+
+credentialsService.get(USERS_ENDPOINT, function(req, res) {
+	res.header(ACCESS_CONTROL_ALLOW_ORIGIN, ASTERISK);
+	checkCredentials(req, function(authResult){
+		if(authResult){
+			UserModel.find({}, function(err, users) {
+				if (err) {
+					winston.error(ERROR_WHILE_GETTING_USERS + err);
+					res.status(500).send();
+					return;
+				}
+				var result = {
+					users : []
+				};
+				for (var i = 0; i < users.length; ++i) {
+					result.users.push({
+						username : users[i].username
+					});
+				}
+				res.status(200).json(result);
+			});
+		} else {
+			res.status(401);
+			res.end(ACCESS_DENIED);
+		}
+	});
+});
+
+
+credentialsService.delete(USERS_ENDPOINT, function(req, res) {
+	res.header(ACCESS_CONTROL_ALLOW_ORIGIN, ASTERISK);
+	checkCredentials(req, function(authResult){
+		if(authResult){
+			UserModel.remove({}, function(err, removed) {
+				if (err) {
+					winston.error(ERROR_WHILE_USER_REMOVING + err);
+					res.status(500).send();			
+				} else {
+					winston.info(ALL_USERS_DELETED);
+					res.status(200).send();			
+				}
+			});
+		} else {
+			res.status(401);
+			res.end(ACCESS_DENIED);
+		}
+	});
+});
+
+function checkCredentials(req, callback) {
+	var credentials = auth(req);
+	if(credentials) {
+		
+		winston.info(STARTING_AUTHENTICATION + credentials.name);
+		var user = credentials.name;
+		var password = credentials.pass;
+		if(user === 'test' && password === 'test') {
+			winston.info(AUTHENTICATED);
+			callback(complete(true));
+		} else {
+			UserModel.findOne({
+				username : user,
+				password : password
+			}, function(err, metadata) {
+				if (!metadata) {
+					winston.info(INVAILD_CREDENTIALS);
+					callback(complete(false));
+				} else {
+					winston.info(AUTHENTICATED);
+					callback(complete(true));
+				}
+			});	
+		}
+	} else {
+		winston.info(LACK_OF_CREDENTIALS);
+		callback(complete(false));
+	}
+}
+
+function checkIfUserExists(user, callback) {
+	UserModel.findOne({
+		username : user
+	}, function(err, metadata) {
+		if (!metadata) {
+			winston.info(USER + user + DOESNOT_EXIST);
+			callback(complete(false));
+		} else {
+			var result = metadata.username;
+			winston.info(USER + result + EXISTS);
+			callback(complete(true));
+		}
+	});	
+}
+
+function complete(value) {
+	return value;
+}
+
+function createUser(body, res) {
+	var data = {};
+
+	data.username = body.username;
+	data.password = body.password;
+
+	UserModel.create(data, function(err, metadata) {
+		if (err) {
+			winston.error(ERROR_WHILE_USER_CREATING + err);
+			res.status(500).send();
+			return;
+		} else {
+			winston.info(USER + metadata.username + CREATED);
+			res.status(201).send();
+		}
+	});
+}
 
 credentialsService.listen(config.httpPort);
