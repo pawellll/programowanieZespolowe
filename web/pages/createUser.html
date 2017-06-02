@@ -39,7 +39,7 @@
             <div class="col-md-4 col-md-offset-4">
                 <div class="login-panel panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Zaloguj się</h3>
+                        <h3 class="panel-title">Dodaj użytkownika</h3>
                     </div>
                     <div class="panel-body">
                         <div id="message" style="color:red"></div>
@@ -51,14 +51,8 @@
                                 <div class="form-group">
                                     <input id="password" class="form-control" placeholder="Hasło" name="password" type="password" value="">
                                 </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input name="remember" type="checkbox" value="Remember Me">Zapamiętaj hasło
-                                    </label>
-                                </div>
                                 <!-- Change this to a button or input when using this as a form -->
-                                <button onclick="login()" class="btn btn-success btn-block">Zaloguj</button>
-                                <button onclick="createUser()" class="btn btn-lg btn-default btn-block">Nowy użytkownik</button>
+                                <button onclick="addUser()" class="btn btn-success btn-block">Dodaj użytkownika</button>
 
                             </fieldset>
                         <!--</form>-->
@@ -82,46 +76,46 @@
     <script src="../dist/js/sb-admin-2.js"></script>
 
     <script>
-        function login(){
-            var url = "http://localhost:1335/authenticate"; 
+        function addUser(){
+            var url = "http://localhost:1335/users";
             var authData = {};
             authData.username = document.getElementById("username").value;
             authData.password = document.getElementById("password").value;
 
             $.ajax({
                 url: url,
-                type: 'GET',
+                type: 'POST',
                 crossDomain: true,
-                headers: {
-                    "Authorization": "Basic " + btoa(authData.username + ":" + authData.password)
-                },
+                data: JSON.stringify(authData),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
                 success: function(data){
-                    handleLoginResult(data,authData);
+                    handleCreateUserResult(data,authData);
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                    handleLoginError();
+                    if (xhr.status == 201)
+                    {
+                        handleCreateUserResult();
+                    }
+                    else
+                    {
+                        handleCreateUserError();
+                    }
                 }
             });
         }
 
-        function handleLoginResult(data,authData)
+        function handleCreateUserResult(data,authData)
         {
             document.getElementById("message").innerHTML = "";
-            localStorage.setItem("username", authData.username);
-            localStorage.setItem("password", authData.password);
-            localStorage.setItem("isLogged", true);
 
-            window.location.href = "index.html";
+            window.location.href = "login.html";
         }
 
-        function handleLoginError() {
-            document.getElementById("message").innerHTML = "Niepoprawny login lub hasło";
+        function handleCreateUserError() {
+            document.getElementById("message").innerHTML = "Wystąpił błąd podczas dodawania użytkownika";
         }
 
-        function createUser() {
-            window.location.href = "createUser.html";
-        }
-    
     </script>
 
 </body>
