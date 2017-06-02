@@ -26,3 +26,5 @@ function logout(){
     localStorage.setItem("isLogged", false);
     refreshUserText();
 }
+
+credentialsIp = "localhost";

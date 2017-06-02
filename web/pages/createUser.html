@@ -75,10 +75,12 @@
     <!-- Custom Theme JavaScript -->
 	<script src="../js/monitorPage/monitorManager.js"></script>
     <script src="../dist/js/sb-admin-2.js"></script>
+    <script src="../js/auth.js"></script>
+
 
     <script>
         function addUser(){
-            var url = "http://localhost:1335/users";
+            var url = "http://"+credentialsIp+":1335/users";
             var authData = {};
             authData.username = document.getElementById("username").value;
             authData.password = document.getElementById("password").value;
