@@ -53,6 +53,7 @@
                                 </div>
                                 <!-- Change this to a button or input when using this as a form -->
                                 <button onclick="addUser()" class="btn btn-success btn-block">Dodaj użytkownika</button>
+                                <button onclick="back()" class="btn btn-lg btn-default btn-block">Powrót do logowania</button>
 
                             </fieldset>
                         <!--</form>-->
@@ -114,6 +115,11 @@
 
         function handleCreateUserError() {
             document.getElementById("message").innerHTML = "Wystąpił błąd podczas dodawania użytkownika";
+        }
+
+        function back()
+        {
+            window.location.href = "login.html";
         }
 
     </script>
