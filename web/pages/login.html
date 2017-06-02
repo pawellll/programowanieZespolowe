@@ -29,48 +29,6 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script>
-        function login(){
-            var url = "http://localhost:1335/authenticate"; //TODO
-            var authData = {};
-            authData.username = document.getElementById("username");
-            authData.password = document.getElementById("password");
-
-            $.ajax({
-                url: url,
-                type: 'GET',
-                contentType:'application/json',
-                data: "",
-                headers: {
-                    "Authorization": "Basic " + btoa(authData.username + ":" + authData.password)
-                },
-                success: function(data){
-                    //On ajax success do this
-//                    alert(data);
-                    handleLoginResult(data,authData);
-                },
-                error: function(xhr, ajaxOptions, thrownError) {
-                    //On error do this
-                    if (xhr.status == 200) {
-
-                        alert(ajaxOptions);
-                    }
-                    else {
-                        alert(xhr.status);
-                        alert(thrownError);
-                    }
-                }
-            });
-        }
-
-        function handleLoginResult(data,authData)
-        {
-            alert(data);
-           window.username = authData.username;
-           window.password = authData.password;
-           window.isLogged = true;
-        }
-    </script>
 
 </head>
 
@@ -84,6 +42,7 @@
                         <h3 class="panel-title">Zaloguj się</h3>
                     </div>
                     <div class="panel-body">
+                        <div id="message" style="color:red"></div>
                         <!--<form role="form">-->
                             <fieldset>
                                 <div class="form-group">
@@ -124,7 +83,7 @@
 
     <script>
         function login(){
-            var url = "http://localhost:1335/authenticate"; //TODO
+            var url = "http://localhost:1335/authenticate"; 
             var authData = {};
             authData.username = document.getElementById("username").value;
             authData.password = document.getElementById("password").value;
@@ -140,23 +99,25 @@
                     handleLoginResult(data,authData);
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
-                    //On error do this
-                    if (xhr.status == 200) {
-
-                        alert(ajaxOptions);
-                    }
-                    else {
-                        alert(xhr.status);
-                        alert(thrownError);
-                    }
+                    handleLoginError();
                 }
             });
         }
 
-    
-            window.password = authData.password;
-            window.isLogged = true;
+        function handleLoginResult(data,authData)
+        {
+            document.getElementById("message").innerHTML = "";
+            localStorage.setItem("username", authData.username);
+            localStorage.setItem("password", authData.password);
+            localStorage.setItem("isLogged", true);
+
+            window.location.href = "index.html";
         }
+
+        function handleLoginError() {
+            document.getElementById("message").innerHTML = "Niepoprawny login lub hasło";
+        }
+    
     </script>
 
 </body>
