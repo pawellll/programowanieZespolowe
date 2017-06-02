@@ -202,36 +202,12 @@
     <!-- Custom Theme JavaScript -->
 	<script src="../js/monitorPage/monitorManager.js"></script>
     <script src="../dist/js/sb-admin-2.js"></script>
+    <script src="../js/auth.js"></script>
 
     <script>
         $(document).ready(function(){
             refreshUserText();
         });
-
-        function refreshUserText()
-        {
-            var Username = document.getElementById("username");
-            var LoginButton = document.getElementById("login");
-
-            var isLogged = localStorage.getItem("isLogged");
-            var username = localStorage.getItem("username");
-
-            if(isLogged == "true")
-            {
-                Username.innerHTML = username;
-                LoginButton.style.visibility = "hidden";
-            }
-            else
-            {
-                Username.innerHTML = "";
-                LoginButton.style.visibility = "visible";
-            }
-        }
-
-        function logout(){
-            localStorage.setItem("isLogged", false);
-            refreshUserText();
-        }
     </script>
 
 </body>

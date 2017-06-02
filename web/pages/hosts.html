@@ -50,7 +50,8 @@
             </div>
 			<!-- Naglowek - prawa strona -->
             <ul class="nav navbar-top-links navbar-right">
-				<a class="navbar-brand">User</a>
+                <a href="login.html" id="login"><i class="fa fa-sign-out fa-fw"></i> Login</a>
+                <a class="navbar-brand" id="username">User</a>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
@@ -61,7 +62,7 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a onclick="logout()"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
                 </li>
@@ -206,6 +207,14 @@
     <!-- Custom Theme JavaScript -->
 	<script src="../js/monitorPage/monitorManager.js"></script>
     <script src="../js/sb-admin-2.js"></script>
+
+    <script src="../js/auth.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            refreshUserText();
+        });
+    </script>
 
 </body>
 
