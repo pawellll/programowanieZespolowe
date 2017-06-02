@@ -61,10 +61,12 @@ var express = require('express');
 var credentialsService = express();
 var bodyParser = require("body-parser");
 var auth = require('basic-auth');
+var cors = require('cors')
 
 //Here we are configuring express to use body-parser as middle-ware.
 credentialsService.use(bodyParser.urlencoded({ extended: false }));
 credentialsService.use(bodyParser.json());
+credentialsService.use(cors())
 
 credentialsService.get(AUTHENTICATE_ENDPOINT, function(req, res) {
 	res.header(ACCESS_CONTROL_ALLOW_ORIGIN, ASTERISK);

@@ -15,6 +15,7 @@
     "mongoose": "latest",
     "body-parser": "latest",
     "winston": "latest",
-	"basic-auth": "latest"
+	"basic-auth": "latest",
+    "cors": "latest"
   }
 }
