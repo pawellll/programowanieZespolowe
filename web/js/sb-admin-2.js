@@ -107,7 +107,43 @@ function getMeasurementsFromMonitor() {
 			createSimpleMeasurementsTable();
 		});
 	}
+
+}
+
+function getArchivalMeasurementsFromMonitor() {
+	if(currentMonitor == null) {
+		alert("Warning: no monitor choosed"); 
+		return;
+	}
 	
+	var concatenatedUrl = getMeasurementsUrl;
+	resourceIdGlobal = localStorage.getItem("resourceGlobalIdStorage");
+	console.log(resourceIdGlobal);
+	if(resourceIdGlobal) {
+		concatenatedUrl += "/" + resourceIdGlobal;
+	
+		var fromDateValue = document.getElementById('fromDateInput').value;
+		var toDateValue = document.getElementById('toDateInput').value;
+		
+		if (!fromDateValue || !toDateValue) {
+			alert("Warning: pick dates"); 
+			return;
+		}
+		
+		concatenatedUrl += "?from=" + fromDateValue;
+		concatenatedUrl += "&to=" + toDateValue;
+		
+		console.log(concatenatedUrl);
+		
+		$.ajax({
+			url: concatenatedUrl,
+			type: 'GET'
+		}).then(function(data) {
+			measurementsData = data;
+			console.log(measurementsData);
+			createSimpleMeasurementsTable();
+		});
+	}
 }
 
 function getMeasurementsFromMonitorByResourceId() {
