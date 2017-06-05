@@ -161,7 +161,8 @@ app.get('/measurements', function(req, res) {
 					resourceName: metadatas[i].hostName,
 					metricName: metadatas[i].metricName,
 					unitName: metadatas[i].unitName,
-					description: metadatas[i].description
+					description: metadatas[i].description,
+					isComposite: metadatas[i].isComposite
 				}
 			});
 		}
@@ -248,7 +249,79 @@ function convertToProperSensorObject(dbSensorObject) {
 app.get('/measurements/:id', function(req, res) {
 	res.header('Access-Control-Allow-Origin', '*');
 
-	winston.info("/measurements/{id} id:" + req.params.id + " limit:" + req.query.limit);
+	winston.info("/measurements/{id} id:" + req.params.id +
+		" limit: " + req.query.limit + ', from: ' + req.query.from + ', to: ' + req.query.to);
+	
+	if ((req.query.from || req.query.to) && req.query.limit) {
+		winston.info('invalid query parameters');
+		
+		res.status(400).send();	
+    	return;		
+	}
+	
+	if (req.query.from && req.query.to) {
+		var fromDate = new Date(req.query.from);
+		var toDate = new Date(req.query.to);
+		
+		if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+			winston.info('invalid query parameters 2');
+		
+			res.status(400).send();	
+			return;	
+		}
+		
+		var result = {};
+		
+		SensorMetadata.findOne({resourceId: req.params.id}, function(err, metadata) {
+			if (!metadata) {
+				winston.info("sensor with given id not found");
+				res.status(404).send();		
+				return;
+			}
+
+			winston.info(metadata);
+
+			result["metadata"] = {};
+			result["metadata"]["resourceName"] = metadata.hostName;
+			result["metadata"]["metricName"] = metadata.metricName;
+			result["metadata"]["unitName"] = metadata.unit;
+			result["metadata"]["description"] = metadata.description;
+			result["metadata"]["isComposite"] = metadata.isComposite;
+
+			result["measurements"] = [];
+
+			//get measurements here
+			SensorMeasurement.find({resourceId: req.params.id, time: {$gt: fromDate, $lt: toDate}}, function(err, measurements) {
+
+				if (err) {
+						winston.error("Error:");
+						winston.error(err);
+						res.status(500).send();
+						return;
+				}
+
+				if (!measurements) {
+					winston.info("no measurements found for id:" + req.params.id);
+				} else {
+					winston.info("adding " + measurements.length + " measurements");
+
+					var table = []
+
+					for(var i = 0; i <measurements.length; ++i) {
+
+						var measurement = {value:(measurements[i]).value ,timestamp:(measurements[i]).time.getTime()}
+						table.push(measurement);
+					}
+
+					result["measurements"] = table;
+				}
+
+				res.status(200).json(result);
+			});
+		});
+		
+		return;
+	}
 	
 	var limit = 10;
 
@@ -281,15 +354,15 @@ app.get('/measurements/:id', function(req, res) {
 		result["metadata"]["isComposite"] = metadata.isComposite;
 
 		result["measurements"] = [];
-
+		
 		//get measurements here
 		SensorMeasurement.find({resourceId:req.params.id}).sort({time: -1}).limit(Number(limit)).exec(function(err, measurements) {
-
+			
 			if (err) {
-					winston.error("Error:");
-					winston.error(err);
-					res.status(500).send();
-					return;
+				winston.error("Error:");
+				winston.error(err);
+				res.status(500).send();
+				return;
 			}
 
 			if (!measurements) {
@@ -300,7 +373,6 @@ app.get('/measurements/:id', function(req, res) {
 				var table = []
 
 				for(var i = 0; i <measurements.length; ++i) {
-
 					var measurement = {value:(measurements[i]).value ,timestamp:(measurements[i]).time.getTime()}
 					table.push(measurement);
 				}
@@ -309,10 +381,8 @@ app.get('/measurements/:id', function(req, res) {
 			}
 
 			res.status(200).json(result);
-
 		});
 	});
-
 });
 
 app.post('/measurements', function(req, res) {
@@ -381,9 +451,8 @@ function addMeasurement(login, body, res) {
 					}
 				};
 				
-				res.status(201).json(resJson);				
+				res.status(201).json(resJson);		
 			}
-
 		});
 
 		winston.info("Adding job with params period:" + body.period + " id:" + body.id + " resourceId:" + data.resourceId);
