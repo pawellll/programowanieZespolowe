@@ -16,6 +16,7 @@ var hostsData;
 var resourceIdGlobal = null;
 var hostIdGlobal = '';
 var resourceForGraphIdGlobal = '';
+var resourceIsCompositeGlobal = '';
 
 function getStreamsFromMonitor() {
 	if(currentMonitor == null) {
@@ -203,6 +204,99 @@ function getHostsFromMonitor() {
     });
 	
 }
+
+function addCompositeMeasurement() {
+    var concatenatedUrl = getMeasurementsUrl;
+    var authData = {};
+    authData.username = localStorage.getItem("username");
+    authData.password = localStorage.getItem("password");
+	
+	var jsonData = {};
+	jsonData.id = localStorage.getItem("resourceGlobalIdStorage");
+	var measurementNameIdValue = document.getElementById('measurementNameId').value;
+	var measurementPeriodIdValue = document.getElementById('measurementPeriodId').value;
+	var measurementIntervalIdValue = document.getElementById('measurementIntervalId').value;
+	console.log("test: " + measurementNameIdValue);
+	if(measurementNameIdValue == "" || measurementPeriodIdValue == "" || measurementIntervalIdValue == "") {
+		alert("All input fields are required!");
+		return;
+	}
+	jsonData.name = measurementNameIdValue;
+	jsonData.period = measurementPeriodIdValue;
+	jsonData.interval = measurementIntervalIdValue;
+	console.log(jsonData);
+
+    $.ajax({
+        url: concatenatedUrl,
+        type: 'POST',
+        //crossDomain: true,
+		dataType: 'json',
+		contentType: "application/json; charset=utf-8",
+		data: JSON.stringify(jsonData),
+        headers: {
+            "Authorization": "Basic " + btoa(authData.username + ":" + authData.password)
+        },
+        success: function(data){
+			window.location.href = "resources.html";
+			alert("Composite measurement added");
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            if (xhr.status == 201)
+            {
+                window.location.href = "resources.html";
+				alert("Composite measurement added");
+            }
+            else if(xhr.status == 400)
+            {
+                alert("Incorrect request parameters!");
+            }
+			else if(xhr.status == 401) {
+				alert("Authentication is required!");
+			}
+			else {
+				alert("Unknown error! Status: " + xhr.status);
+			}
+        }
+    });
+}
+
+function deleteCompositeMeasurement() {
+	var concatenatedUrl = getMeasurementsUrl + "/" + localStorage.getItem("resourceGlobalIdStorage");
+    var authData = {};
+    authData.username = localStorage.getItem("username");
+    authData.password = localStorage.getItem("password");
+	
+	$.ajax({
+        url: concatenatedUrl,
+        type: 'DELETE',
+        headers: {
+            "Authorization": "Basic " + btoa(authData.username + ":" + authData.password)
+        },
+        success: function(data){
+			window.location.href = "resources.html";
+			alert("Composite measurement deleted");
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            if (xhr.status == 200)
+            {
+				window.location.href = "resources.html";
+				alert("Composite measurement deleted");
+            }
+			else if(xhr.status == 401) {
+				alert("Authentication is required!");
+			}
+			else if(xhr.status == 402) {
+				alert("Logged user is not allowed to delete measurement!");
+			}
+			else if(xhr.status == 403) {
+				alert("Resource with given id does not exist!");
+			}
+			else {
+				alert("Unknown error! Status: " + xhr.status);
+			}
+        }
+    });
+}
  
 function createStreamsTable() {
 	if(currentMonitor == null) {
@@ -246,6 +340,12 @@ function createStreamsTable() {
 		var newMeasurementsButton  = document.createElement("BUTTON");
 		var newMeasurementsButtonText = document.createTextNode("Go to measurements");
 		newMeasurementsButton.setAttribute("id", streamsData.streams[i].id);
+		if(streamsData.streams[i].metadata.isComposite == false) {
+			newMeasurementsButton.setAttribute("content", "false");
+		}
+		else {
+			newMeasurementsButton.setAttribute("content", "true");
+		}
 		newMeasurementsButton.setAttribute("name", "editButtonName" + i);
 		newMeasurementsButton.setAttribute("className", "form-btn semibold");
 		newMeasurementsButton.appendChild(newMeasurementsButtonText);
@@ -255,8 +355,16 @@ function createStreamsTable() {
 			localStorage.setItem("resourceGlobalIdStorage", resourceIdGlobal);
 			console.log(resourceIdGlobal);
 			
-			window.location.href = address + "simple.html";
-			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/simple.html";
+			resourceIsCompositeGlobal = this.getAttribute("content");
+			localStorage.setItem("resourceIsCompositeGlobalStorage", resourceIsCompositeGlobal);
+			console.log(resourceIsCompositeGlobal);
+			
+			if(resourceIsCompositeGlobal = "false") {
+				window.location.href = address + "simple.html";
+			}
+			else {
+				window.location.href = address + "composite.html";
+			}
 			
 		}
 		newButtonCell.appendChild(newMeasurementsButton);
@@ -274,10 +382,49 @@ function createStreamsTable() {
 			console.log(resourceForGraphIdGlobal);
 			
 			window.location.href = address + "graphs.html";
-			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/graphs.html";
 			
 		}
 		newButtonCell.appendChild(newGraphsButton);
+		
+		var actionButton  = document.createElement("BUTTON");
+		var actionButtonText;
+		if(streamsData.streams[i].metadata.isComposite == false) {
+			actionButtonText = document.createTextNode("Add composite");
+		}
+		else {
+			actionButtonText = document.createTextNode("Remove");
+		}
+		
+		actionButton.setAttribute("id", streamsData.streams[i].id);
+		if(streamsData.streams[i].metadata.isComposite == false) {
+			actionButton.setAttribute("content", "false");
+		}
+		else {
+			actionButton.setAttribute("content", "true");
+		}
+		
+		actionButton.setAttribute("name", "actionButtonName" + i);
+		actionButton.setAttribute("className", "form-btn semibold");
+		actionButton.appendChild(actionButtonText);
+		
+		actionButton.onclick = function() {
+			resourceIdGlobal = this.getAttribute("id");
+			localStorage.setItem("resourceGlobalIdStorage", resourceIdGlobal);
+			console.log("resourceIdGlobal: " + resourceIdGlobal);
+			
+			resourceIsCompositeGlobal = this.getAttribute("content");
+			localStorage.setItem("resourceIsCompositeGlobalStorage", resourceIsCompositeGlobal);
+			console.log(resourceIsCompositeGlobal);
+			
+			if(resourceIsCompositeGlobal == "false") {
+				window.location.href = address + "createComposite.html";
+			}
+			else {
+				deleteCompositeMeasurement();
+			}
+			
+		}
+		newButtonCell.appendChild(actionButton);
 	}
 	
 }
@@ -347,7 +494,6 @@ function createHostsTable() {
 			console.log(hostIdGlobal);
 			
 			window.location.href = address + "resources.html";
-			//window.location.href = "file:///C:/programowanieZespolowe/22_05/programowanieZespolowe-master/web/pages/resources.html";
 			
 		}
 		newButtonCell.appendChild(newResourcesButton);

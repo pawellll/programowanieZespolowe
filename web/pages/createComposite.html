@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Simple measurements</title>
+    <title>Resources</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -38,7 +38,7 @@
 
 </head>
 
-<body onload="getMeasurementsFromMonitorByResourceId()">
+<body>
 
     <div id="wrapper">
 
@@ -94,69 +94,30 @@
 		
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Composite measurements</h1>
+                    <h1 class="page-header">New composite measurement</h1>
                 </div>
             </div>
-
+			
 			<div class="panel panel-default">
                 <div class="panel-heading">
-                    Recent measurements
+                    Add new composite measurement
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">							
 					<div class="tmp-form">
-						<div class="col-xs-8 wow animated slideInLeft" data-wow-delay=".5s">
-						<input type="text" name="limitName" id="limitId" class="form" placeholder="Limit" />
-						<button type="submit" id="submitId" name="submitName" class="form-btn semibold" onClick="getMeasurementsFromMonitor();">Select</button> 
-					</div>
-					<!-- Clear -->
-					<div class="clear"></div>
-					</div>
-                </div>
-                <!-- /.panel-body -->
-            </div>
-		
-			<div class="panel panel-default">
-                <div class="panel-heading">
-                    Archival measurements
-                </div>
-                <!-- /.panel-heading -->
-                <div class="panel-body">							
-					<div class="tmp-form">
-						<div class="col-xs-8 wow animated slideInLeft" data-wow-delay=".5s">
-						<span>From </span><input type="datetime-local" id="fromDateInput">
-						<span>To </span><input type="datetime-local" id="toDateInput">
-						<button type="submit" id="archivalSubmitId" name="submitName" class="form-btn semibold" onClick="getArchivalMeasurementsFromMonitor();">Select</button> 
-					</div>
-					<!-- Clear -->
-					<div class="clear"></div>
+						<div id="filterResourcesDivId" class="col-xs-12 wow animated slideInLeft" data-wow-delay=".5s">
+							<input type="text" name="measurementNameName" id="measurementNameId" class="form" placeholder="Name" />
+							<input type="text" name="measurementPeriodName" id="measurementPeriodId" class="form" placeholder="Period (sec)" />
+							<input type="text" name="measurementIntervalName" id="measurementIntervalId" class="form" placeholder="Interval (sec)" />				
+							<button type="submit" name="addMeasurementButtonName" id="addMeasurementButtonId" class="form-btn semibold" onclick="addCompositeMeasurement();">Add measurement</button> 
+						</div>
+						<!-- Clear -->
+						<div class="clear"></div>
 					</div>
                 </div>
                 <!-- /.panel-body -->
             </div>
-		
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 id="measurementLabelId">Last measurements</h4>
-                        </div>
 
-                        <div class="panel-body">
-                            <table width="100%" class="table table-striped table-bordered table-hover" id="measurementsTableId">
-                                <thead>
-                                    <tr>
-                                        <th>Value</th>
-                                        <th>Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
     </div>
