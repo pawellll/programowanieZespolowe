@@ -1,8 +1,7 @@
 ///add chartPlotter.js and monitorManager.js before this file!
 var recentMeasurementsCanvasId = "measurementsGraph";
 var archivalMeasurementsCanvasId = "measurementsGraphArchival";
-var measurementGraph = null;
-var archivalMeasurementGraph = null;
+var graphObjects = {};
 
 var interval = null;
 var refreshInterval = 5000; ///5s interval
@@ -17,36 +16,42 @@ function formatTimestamp(timestamp){
 	return formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);	
 }
 
-function createMeasurementsGraph(canvasId, data, graphInstance) {	
+function createMeasurementsGraph(canvasId, measuresData) {	
 	if(canvasId == null || canvasId == ""){
 		canvasId = recentMeasurementsCanvasId;
-	}
-	
-	if(graphInstance != null){
-		graphInstance.chartInstance.destroy();
-	}
-	
-	var parentElement = $("#" + canvasId).parent();
-	$("#" + canvasId).remove();
-	parentElement.append('<canvas id="' + canvasId + '" data-title="Measurements" data-x-label="Timestamp" data-y-label="Value"></canvas>');
-	graphInstance = new chartPlotter(canvasId);
+	}	
 	
 	var data = [];
 	var labels = [];
 	
-	for(var i = data.measurements.length - 1; i >= 0; i--){		
-		data.push(data.measurements[i].value);
-		labels.push(formatTimestamp(data.measurements[i].timestamp));
-	}	
+	if(canvasId == archivalMeasurementsCanvasId)
+		for(var i = 0; i < measuresData.measurements.length; i++){		
+			data.push(measuresData.measurements[i].value);
+			labels.push(formatTimestamp(measuresData.measurements[i].timestamp));
+		}	
+	else
+		for(var i = measuresData.measurements.length - 1; i >= 0; i--){		
+			data.push(measuresData.measurements[i].value);
+			labels.push(formatTimestamp(measuresData.measurements[i].timestamp));
+		}	
 	
-	graphInstance.addDataset(data, data.metadata.description);
+	var graphInstance = graphObjects[canvasId];
 	
-	var xlabel = "";
-	var ylabel = data.metadata.metricName;
-	graphInstance.addLabels(labels, xlabel, ylabel);	
-	graphInstance.plot();
-	
-	return graphInstance;
+	if(graphInstance == null){
+		graphInstance = new chartPlotter(canvasId);
+		graphInstance.addDataset(data, measuresData.metadata.description);
+		
+		var xlabel = "";
+		var ylabel = measuresData.metadata.metricName;
+		graphInstance.addLabels(labels, xlabel, ylabel);	
+		graphInstance.plot();
+		graphObjects[canvasId] = graphInstance;	
+	}
+	else{
+		graphInstance.chartInstance.config.data.labels = labels;
+		graphInstance.chartInstance.config.data.datasets[0].data = data;
+		graphInstance.chartInstance.update();	
+	}		
 }
 
 function selectMeasurementClick(value){
@@ -63,14 +68,10 @@ function selectMeasurementClick(value){
 		limitValue = value;
 	}
 	
-	getMeasurementsFromMonitorByResourceId(limitValue, null, null, recentMeasurementsCanvasId).then(function(graph){
-		measurementGraph = graph;
-	});
+	getMeasurementsFromMonitorByResourceId(limitValue, null, null, recentMeasurementsCanvasId);
 	
 	interval = setInterval(function(){
-		getMeasurementsFromMonitorByResourceId(limitValue, null, null, recentMeasurementsCanvasId).then(function(graph){
-			measurementGraph = graph;
-		});
+		getMeasurementsFromMonitorByResourceId(limitValue, null, null, recentMeasurementsCanvasId);
 	}, refreshInterval);		
 }
 
@@ -85,12 +86,10 @@ function selectArchivalMeasurementClick(){
 	
 	if(startDate == "" || endDate == "") return;
 	
-	getMeasurementsFromMonitorByResourceId(null, startDate, endDate, archivalMeasurementsCanvasId).then(function(graph){
-		archivalMeasurementGraph = graph;
-	});	
+	getMeasurementsFromMonitorByResourceId(null, startDate, endDate, archivalMeasurementsCanvasId);
 }
 
-function getMeasurementsFromMonitorByResourceId(limitValue, fromDate, toDate, canvasId, graphInstance) {
+function getMeasurementsFromMonitorByResourceId(limitValue, fromDate, toDate, canvasId) {
 	measurementIdValue = localStorage.getItem("resourceForGraphGlobalIdStorage");
 	
 	if(measurementIdValue) {
@@ -117,7 +116,7 @@ function getMeasurementsFromMonitorByResourceId(limitValue, fromDate, toDate, ca
 			url: concatenatedUrl,
 			type: 'GET'
 		}).then(function(data) {
-			return createMeasurementsGraph(canvasId, data, graphInstance);
+			return createMeasurementsGraph(canvasId, data);
 		}).fail(function(){
 			alert("Server connection error");
 			clearInterval(interval);

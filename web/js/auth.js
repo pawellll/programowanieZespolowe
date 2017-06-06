@@ -27,4 +27,4 @@ function logout(){
     refreshUserText();
 }
 
-credentialsIp = "localhost";
+credentialsIp = "89.79.119.210";
