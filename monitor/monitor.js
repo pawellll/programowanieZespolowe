@@ -624,6 +624,7 @@ function isAuthorized(login, password) {
 	}
 
 	winston.info("Authorizing with address:" + url + " for user:" + login);
+	winston.info("User:" + login + "  Password:" + password);
 
 	request.get(options, function (err, res, body) {
 
