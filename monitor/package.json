@@ -16,6 +16,7 @@
     "body-parser": "latest",
     "winston": "latest",
     "basic-auth": "latest",
-    "request": "latest"
+    "request": "latest",
+    "cors": "latest"
   }
 }
