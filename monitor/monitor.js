@@ -388,26 +388,33 @@ app.get('/measurements/:id', function(req, res) {
 	});
 });
 
-app.post('/measurements', function(req, res) {
-	res.header('Access-Control-Allow-Origin', '*');
-	var user = auth(req);
-	
-	if (!isAuthorized(user.name, user.pass)) {
-		winston.info('user not authorized');
+function addCompositeCallback(bIsAuthorized, req, res) {
+	var logPrefix = "addCompositeCallback:";
+
+	if(!bIsAuthorized) {
+		winston.info(logPrefix + 'user not authorized');
 		res.status(401).send();
 		return;
 	}
-	
-	winston.info("create composite, body:");
+
+	winston.info(logPrefix + "create composite, body:");
 	winston.info(req.body);
+
+	var user = auth(req);
 
 	if (checkParameters(req.body)) {
 		addMeasurement(user.name, req.body, res);
 	} else {
-		winston.info("incomplete or incorrect parameters");
+		winston.info(logPrefix + "incomplete or incorrect parameters");
 		res.status(400).send();
 	}
+}
 
+app.post('/measurements', function(req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
+	var user = auth(req);
+	
+	isAuthorized(user.name, user.pass, req, res, addCompositeCallback)
 });
 
 var measurementsCounter = 1;
@@ -465,20 +472,18 @@ function addMeasurement(login, body, res) {
 	});
 }
 
-app.delete('/measurements/:id', function (req, res) {
-	res.header('Access-Control-Allow-Origin', '*');
-	var id = req.params.id;
-	
-	winston.info("delete measurement, id: " + id);
-	var user = auth(req);
-	
-	if (!isAuthorized(user.name, user.pass)) {
+
+function deleteCompositeCallback(bIsAuthorized, req, res) {
+	winston.info('user authorized:' + bIsAuthorized);
+
+	if (!bIsAuthorized) {
 		window.info('user not authorized');
 		res.status(401).send();
 		return;
 	}
-	
-	winston.info('user authorized');
+
+	var id = req.params.id;
+	var user = auth(req);
 
 	if (!id) {
 		winston.info('id - request parameter is not given');
@@ -533,6 +538,16 @@ app.delete('/measurements/:id', function (req, res) {
 		});
 
 	});
+}
+
+app.delete('/measurements/:id', function (req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
+	var id = req.params.id;
+	
+	winston.info("delete measurement, id: " + id);
+	var user = auth(req);
+	
+	isAuthorized(user.name, user.pass, req, res, deleteCompositeCallback)
 });
 
 
@@ -611,7 +626,8 @@ Array.prototype.unique = function() {
     return arr; 
 }
 
-function isAuthorized(login, password) {
+function isAuthorized(login, password, req, baseRes, callback) {
+
 	winston.info("isAuthorized");
 	
 	var url = config.credentialService.address + ':' + config.credentialService.port + '/' + config.credentialService.method;
@@ -624,27 +640,24 @@ function isAuthorized(login, password) {
 	}
 
 	winston.info("Authorizing with address:" + url + " for user:" + login);
-	winston.info("User:" + login + "  Password:" + password);
 
-	var result = request.get(options, function (err, res, body) {
+	request.get(options, function (err, res, body) {
 
 	  	if (err) {
 			winston.error("Error while authorizing:");
 			winston.error(err);
-			return false;
+			callback(false, req, baseRes);
 	  	}
 
 	  	winston.info("Status:" + res.statusCode);
 
 		if (res.statusCode != 200) {
 			winston.info("User:" + login + " not authorized");
-			return false;
+			callback(false, req, baseRes);
 		} 
 
 		winston.info("User " + login + " authorized");
 
-		return true;
+		callback(true, req, baseRes);
 	});
-	winston.info(result);
-	return result;
 }
