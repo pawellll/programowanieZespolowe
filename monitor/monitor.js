@@ -395,8 +395,6 @@ app.post('/measurements', function(req, res) {
 		return;
 	}
 	
-	res.header('Access-Control-Allow-Origin', '*');
-	
 	winston.info("create composite, body:");
 	winston.info(req.body);
 
@@ -478,8 +476,6 @@ app.delete('/measurements/:id', function (req, res) {
 	}
 	
 	winston.info('user authorized');
-	
-	res.header('Access-Control-Allow-Origin', '*');
 
 	if (!id) {
 		winston.info('id - request parameter is not given');
