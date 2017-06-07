@@ -626,7 +626,7 @@ function isAuthorized(login, password) {
 	winston.info("Authorizing with address:" + url + " for user:" + login);
 	winston.info("User:" + login + "  Password:" + password);
 
-	request.get(options, function (err, res, body) {
+	var result = request.get(options, function (err, res, body) {
 
 	  	if (err) {
 			winston.error("Error while authorizing:");
@@ -644,5 +644,7 @@ function isAuthorized(login, password) {
 		winston.info("User " + login + " authorized");
 
 		return true;
-	})
+	});
+	winston.info(result);
+	return result;
 }
