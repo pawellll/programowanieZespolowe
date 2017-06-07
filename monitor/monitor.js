@@ -386,6 +386,7 @@ app.get('/measurements/:id', function(req, res) {
 });
 
 app.post('/measurements', function(req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
 	var user = auth(req);
 	
 	if (!isAuthorized(user.name, user.pass)) {
@@ -464,6 +465,7 @@ function addMeasurement(login, body, res) {
 }
 
 app.delete('/measurements/:id', function (req, res) {
+	res.header('Access-Control-Allow-Origin', '*');
 	var id = req.params.id;
 	
 	winston.info("delete measurement, id: " + id);
