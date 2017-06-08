@@ -157,6 +157,7 @@ app.get('/measurements', function(req, res) {
 		
 		var resJson = {streams: []};
 		for (var i = 0; i < metadatas.length; ++i) {		
+
 			resJson.streams.push({
 				id: metadatas[i].resourceId,
 				location: config.location + metadatas[i].resourceId,
@@ -421,7 +422,8 @@ var measurementsCounter = 1;
 var compositeJobs = [];
 
 function addMeasurement(login, body, res) {
-	
+	winston.info("addMeasurement");
+
 	SensorMetadata.findOne({resourceId: body.id}, function(err, metadata) {
 
 		if (!metadata) {
@@ -437,6 +439,7 @@ function addMeasurement(login, body, res) {
 		data.metricName = body.name;
 		data.description = 'period:' + body.period + ' interval:' + body.interval;
 		data.resourceName = metadata.hostName;
+		data.hostName = metadata.hostName;
 		data.time = new Date();
 		data.isComposite = true;
 		data.login = login;
