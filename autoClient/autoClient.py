@@ -21,8 +21,9 @@ def getMeasurementsFromMonitor(address):
 
 	measurements = {}
 	for x in r.json()['streams']:
-		m = measurements.setdefault(x['metadata']['metricName'], [])
-		m.append(x['location'])
+		if (x['metadata']['isComposite'] == False): 
+			m = measurements.setdefault(x['metadata']['metricName'], [])
+			m.append(x['location'])
 
 	return measurements
 
